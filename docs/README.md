@@ -15,6 +15,8 @@
 
 `CONTEXT.md` 是跨任务的术语和领域上下文，任务涉及对象、状态或概念时必须一并查阅；它不改变上述产品文档的权威层级。局部机械任务可以缩短 Master 章节阅读，但一旦出现语义、隐私、AI、原始记录、离线/同步或范围问题，必须回到完整顺序。
 
+工程实施前还应进入 [工程文档索引](./engineering/README.md)，读取与当前阶段相关的 traceability、Spike 证据、实现契约与 ADR。工程文档只落实上位产品语义，不能覆盖本页的权威层级。
+
 ## 权威层级与冲突规则
 
 ```text
@@ -140,5 +142,6 @@ LifeOS 的产品维护流程是：
 - Codex Operating Manual：Draft v1.0；
 - Decision Log：D-001 至 D-031；
 - `CONTEXT.md`：LifeOS 领域统一语言初版。
+- Stage 0 工程基础：Completed；ADR-0001（Flutter）与 ADR-0002（SQLite/Drift、Raw/Derived 分离）已接受，Stage 1 真实设备与 production data gate 尚未验收。
 
 后续修改请保留历史语义，优先增加版本、决策和变更说明，而不是静默重写过去。
