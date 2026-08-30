@@ -101,26 +101,46 @@ try {
   } catch {
     $processError = $_.Exception.Message
   } finally {
-    if ($started -and -not $process.HasExited) {
-      try {
-        $process.Kill($true)
-        $process.WaitForExit(5000) | Out-Null
-      } catch {
-        if (-not $processError) {
-          $processError = "Owned probe process cleanup failed: $($_.Exception.Message)"
+    try {
+      if ($started -and -not $process.HasExited) {
+        try {
+          $process.Kill($true)
+          $process.WaitForExit(5000) | Out-Null
+        } catch {
+          $cleanupError = "Owned probe process cleanup failed: $($_.Exception.Message)"
+          $processError = if ($processError) { "$processError; $cleanupError" } else { $cleanupError }
         }
       }
+      if ($started -and $process.HasExited) {
+        $probeExitCode = $process.ExitCode
+      }
+      if ($null -ne $stdoutTask) {
+        try {
+          if ($stdoutTask.Wait(5000)) {
+            $runtimeStdout = $stdoutTask.GetAwaiter().GetResult()
+          } else {
+            $processError = if ($processError) { "$processError; stdout drain timed out" } else { 'stdout drain timed out' }
+          }
+        } catch {
+          $drainError = "stdout drain failed: $($_.Exception.Message)"
+          $processError = if ($processError) { "$processError; $drainError" } else { $drainError }
+        }
+      }
+      if ($null -ne $stderrTask) {
+        try {
+          if ($stderrTask.Wait(5000)) {
+            $runtimeStderr = $stderrTask.GetAwaiter().GetResult()
+          } else {
+            $processError = if ($processError) { "$processError; stderr drain timed out" } else { 'stderr drain timed out' }
+          }
+        } catch {
+          $drainError = "stderr drain failed: $($_.Exception.Message)"
+          $processError = if ($processError) { "$processError; $drainError" } else { $drainError }
+        }
+      }
+    } finally {
+      $process.Dispose()
     }
-    if ($started -and $process.HasExited) {
-      $probeExitCode = $process.ExitCode
-    }
-    if ($null -ne $stdoutTask -and $stdoutTask.Wait(5000)) {
-      $runtimeStdout = $stdoutTask.GetAwaiter().GetResult()
-    }
-    if ($null -ne $stderrTask -and $stderrTask.Wait(5000)) {
-      $runtimeStderr = $stderrTask.GetAwaiter().GetResult()
-    }
-    $process.Dispose()
   }
   if ($timedOut) {
     $runtimeStderr += "`nSCRIPT_TIMEOUT: probe exceeded $ProbeTimeoutSeconds seconds; the owned process tree was terminated.`n"

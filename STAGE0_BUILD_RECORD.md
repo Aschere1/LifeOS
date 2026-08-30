@@ -29,15 +29,18 @@
   builds Android; `-SkipAndroid` is only for the second Windows repeat.
   The owned Windows probe process has a 30-second timeout and controlled
   process-tree cleanup.
-- Windows release builds in the final evidence runs: PASS in 25.0s (full
-  default path) and 9.8s (`-SkipAndroid`). Full release runner directory:
+- Windows release builds in the latest evidence runs: PASS in 9.5s and 9.2s
+  (`-SkipAndroid` normal/recovery paths). Full release runner directory:
   27,848,756 bytes.
-- Windows headless probe, final default run: PASS. Evidence JSON:
-  `build/stage0-logs/windows-probe-20260830-085956.json` (750 bytes), parsed
+- Windows headless probe, normal success: PASS. Evidence JSON:
+  `build/stage0-logs/windows-probe-20260830-134645.json` (750 bytes), parsed
   with `ConvertFrom-Json`; sibling full runtime log: `.log` (885 bytes).
-- Windows headless probe, final `-SkipAndroid` repeat: PASS. Evidence JSON:
-  `build/stage0-logs/windows-probe-20260830-090109.json` (750 bytes), also
-  parsed with `ConvertFrom-Json`; sibling full runtime log: `.log` (885 bytes).
+- Windows timeout path: expected failure with `-ProbeTimeoutSeconds 1`.
+  `windows-probe-20260830-134705.log` (216 bytes) records the owned process-tree
+  termination; process inspection found zero remaining owned probe processes.
+- Windows headless probe, post-timeout recovery: PASS. Evidence JSON:
+  `build/stage0-logs/windows-probe-20260830-134731.json` (750 bytes), parsed
+  with `ConvertFrom-Json`; sibling full runtime log: `.log` (885 bytes).
   Both JSON files have `status=PASS`, `raw_value_preserved=true`,
   `derived_artifact_present=true`, `PRAGMA user_version=2`, and matching
   expected/verified raw SHA-256
