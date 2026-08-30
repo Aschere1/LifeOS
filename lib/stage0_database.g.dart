@@ -9,10 +9,12 @@ class $RawCapturesTable extends RawCaptures
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $RawCapturesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _captureIdMeta = const VerificationMeta(
+    'captureId',
+  );
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
+  late final GeneratedColumn<String> captureId = GeneratedColumn<String>(
+    'capture_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -29,17 +31,17 @@ class $RawCapturesTable extends RawCaptures
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _sourceDeviceIdMeta = const VerificationMeta(
-    'sourceDeviceId',
-  );
+  static const VerificationMeta _sourceInstallationIdMeta =
+      const VerificationMeta('sourceInstallationId');
   @override
-  late final GeneratedColumn<String> sourceDeviceId = GeneratedColumn<String>(
-    'source_device_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumn<String> sourceInstallationId =
+      GeneratedColumn<String>(
+        'source_installation_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
   static const VerificationMeta _capturedAtUtcMicrosMeta =
       const VerificationMeta('capturedAtUtcMicros');
   @override
@@ -60,12 +62,12 @@ class $RawCapturesTable extends RawCaptures
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _sourceTimeZoneMeta = const VerificationMeta(
-    'sourceTimeZone',
+  static const VerificationMeta _sourceTimeZoneIdMeta = const VerificationMeta(
+    'sourceTimeZoneId',
   );
   @override
-  late final GeneratedColumn<String> sourceTimeZone = GeneratedColumn<String>(
-    'source_time_zone',
+  late final GeneratedColumn<String> sourceTimeZoneId = GeneratedColumn<String>(
+    'source_time_zone_id',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -105,12 +107,12 @@ class $RawCapturesTable extends RawCaptures
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
+    captureId,
     rawText,
-    sourceDeviceId,
+    sourceInstallationId,
     capturedAtUtcMicros,
     originalOffsetMinutes,
-    sourceTimeZone,
+    sourceTimeZoneId,
     visibility,
     revision,
     createdAtUtcMicros,
@@ -127,10 +129,13 @@ class $RawCapturesTable extends RawCaptures
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    if (data.containsKey('capture_id')) {
+      context.handle(
+        _captureIdMeta,
+        captureId.isAcceptableOrUnknown(data['capture_id']!, _captureIdMeta),
+      );
     } else if (isInserting) {
-      context.missing(_idMeta);
+      context.missing(_captureIdMeta);
     }
     if (data.containsKey('raw_text')) {
       context.handle(
@@ -140,16 +145,16 @@ class $RawCapturesTable extends RawCaptures
     } else if (isInserting) {
       context.missing(_rawTextMeta);
     }
-    if (data.containsKey('source_device_id')) {
+    if (data.containsKey('source_installation_id')) {
       context.handle(
-        _sourceDeviceIdMeta,
-        sourceDeviceId.isAcceptableOrUnknown(
-          data['source_device_id']!,
-          _sourceDeviceIdMeta,
+        _sourceInstallationIdMeta,
+        sourceInstallationId.isAcceptableOrUnknown(
+          data['source_installation_id']!,
+          _sourceInstallationIdMeta,
         ),
       );
     } else if (isInserting) {
-      context.missing(_sourceDeviceIdMeta);
+      context.missing(_sourceInstallationIdMeta);
     }
     if (data.containsKey('captured_at_utc_micros')) {
       context.handle(
@@ -173,12 +178,12 @@ class $RawCapturesTable extends RawCaptures
     } else if (isInserting) {
       context.missing(_originalOffsetMinutesMeta);
     }
-    if (data.containsKey('source_time_zone')) {
+    if (data.containsKey('source_time_zone_id')) {
       context.handle(
-        _sourceTimeZoneMeta,
-        sourceTimeZone.isAcceptableOrUnknown(
-          data['source_time_zone']!,
-          _sourceTimeZoneMeta,
+        _sourceTimeZoneIdMeta,
+        sourceTimeZoneId.isAcceptableOrUnknown(
+          data['source_time_zone_id']!,
+          _sourceTimeZoneIdMeta,
         ),
       );
     }
@@ -213,22 +218,22 @@ class $RawCapturesTable extends RawCaptures
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {captureId};
   @override
   RawCapture map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RawCapture(
-      id: attachedDatabase.typeMapping.read(
+      captureId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}id'],
+        data['${effectivePrefix}capture_id'],
       )!,
       rawText: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}raw_text'],
       )!,
-      sourceDeviceId: attachedDatabase.typeMapping.read(
+      sourceInstallationId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}source_device_id'],
+        data['${effectivePrefix}source_installation_id'],
       )!,
       capturedAtUtcMicros: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -238,9 +243,9 @@ class $RawCapturesTable extends RawCaptures
         DriftSqlType.int,
         data['${effectivePrefix}original_offset_minutes'],
       )!,
-      sourceTimeZone: attachedDatabase.typeMapping.read(
+      sourceTimeZoneId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}source_time_zone'],
+        data['${effectivePrefix}source_time_zone_id'],
       ),
       visibility: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -264,22 +269,22 @@ class $RawCapturesTable extends RawCaptures
 }
 
 class RawCapture extends DataClass implements Insertable<RawCapture> {
-  final String id;
+  final String captureId;
   final String rawText;
-  final String sourceDeviceId;
+  final String sourceInstallationId;
   final int capturedAtUtcMicros;
   final int originalOffsetMinutes;
-  final String? sourceTimeZone;
+  final String? sourceTimeZoneId;
   final String visibility;
   final int revision;
   final int createdAtUtcMicros;
   const RawCapture({
-    required this.id,
+    required this.captureId,
     required this.rawText,
-    required this.sourceDeviceId,
+    required this.sourceInstallationId,
     required this.capturedAtUtcMicros,
     required this.originalOffsetMinutes,
-    this.sourceTimeZone,
+    this.sourceTimeZoneId,
     required this.visibility,
     required this.revision,
     required this.createdAtUtcMicros,
@@ -287,13 +292,13 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
+    map['capture_id'] = Variable<String>(captureId);
     map['raw_text'] = Variable<String>(rawText);
-    map['source_device_id'] = Variable<String>(sourceDeviceId);
+    map['source_installation_id'] = Variable<String>(sourceInstallationId);
     map['captured_at_utc_micros'] = Variable<int>(capturedAtUtcMicros);
     map['original_offset_minutes'] = Variable<int>(originalOffsetMinutes);
-    if (!nullToAbsent || sourceTimeZone != null) {
-      map['source_time_zone'] = Variable<String>(sourceTimeZone);
+    if (!nullToAbsent || sourceTimeZoneId != null) {
+      map['source_time_zone_id'] = Variable<String>(sourceTimeZoneId);
     }
     map['visibility'] = Variable<String>(visibility);
     map['revision'] = Variable<int>(revision);
@@ -303,14 +308,14 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
 
   RawCapturesCompanion toCompanion(bool nullToAbsent) {
     return RawCapturesCompanion(
-      id: Value(id),
+      captureId: Value(captureId),
       rawText: Value(rawText),
-      sourceDeviceId: Value(sourceDeviceId),
+      sourceInstallationId: Value(sourceInstallationId),
       capturedAtUtcMicros: Value(capturedAtUtcMicros),
       originalOffsetMinutes: Value(originalOffsetMinutes),
-      sourceTimeZone: sourceTimeZone == null && nullToAbsent
+      sourceTimeZoneId: sourceTimeZoneId == null && nullToAbsent
           ? const Value.absent()
-          : Value(sourceTimeZone),
+          : Value(sourceTimeZoneId),
       visibility: Value(visibility),
       revision: Value(revision),
       createdAtUtcMicros: Value(createdAtUtcMicros),
@@ -323,16 +328,18 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return RawCapture(
-      id: serializer.fromJson<String>(json['id']),
+      captureId: serializer.fromJson<String>(json['captureId']),
       rawText: serializer.fromJson<String>(json['rawText']),
-      sourceDeviceId: serializer.fromJson<String>(json['sourceDeviceId']),
+      sourceInstallationId: serializer.fromJson<String>(
+        json['sourceInstallationId'],
+      ),
       capturedAtUtcMicros: serializer.fromJson<int>(
         json['capturedAtUtcMicros'],
       ),
       originalOffsetMinutes: serializer.fromJson<int>(
         json['originalOffsetMinutes'],
       ),
-      sourceTimeZone: serializer.fromJson<String?>(json['sourceTimeZone']),
+      sourceTimeZoneId: serializer.fromJson<String?>(json['sourceTimeZoneId']),
       visibility: serializer.fromJson<String>(json['visibility']),
       revision: serializer.fromJson<int>(json['revision']),
       createdAtUtcMicros: serializer.fromJson<int>(json['createdAtUtcMicros']),
@@ -342,12 +349,12 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
+      'captureId': serializer.toJson<String>(captureId),
       'rawText': serializer.toJson<String>(rawText),
-      'sourceDeviceId': serializer.toJson<String>(sourceDeviceId),
+      'sourceInstallationId': serializer.toJson<String>(sourceInstallationId),
       'capturedAtUtcMicros': serializer.toJson<int>(capturedAtUtcMicros),
       'originalOffsetMinutes': serializer.toJson<int>(originalOffsetMinutes),
-      'sourceTimeZone': serializer.toJson<String?>(sourceTimeZone),
+      'sourceTimeZoneId': serializer.toJson<String?>(sourceTimeZoneId),
       'visibility': serializer.toJson<String>(visibility),
       'revision': serializer.toJson<int>(revision),
       'createdAtUtcMicros': serializer.toJson<int>(createdAtUtcMicros),
@@ -355,44 +362,44 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
   }
 
   RawCapture copyWith({
-    String? id,
+    String? captureId,
     String? rawText,
-    String? sourceDeviceId,
+    String? sourceInstallationId,
     int? capturedAtUtcMicros,
     int? originalOffsetMinutes,
-    Value<String?> sourceTimeZone = const Value.absent(),
+    Value<String?> sourceTimeZoneId = const Value.absent(),
     String? visibility,
     int? revision,
     int? createdAtUtcMicros,
   }) => RawCapture(
-    id: id ?? this.id,
+    captureId: captureId ?? this.captureId,
     rawText: rawText ?? this.rawText,
-    sourceDeviceId: sourceDeviceId ?? this.sourceDeviceId,
+    sourceInstallationId: sourceInstallationId ?? this.sourceInstallationId,
     capturedAtUtcMicros: capturedAtUtcMicros ?? this.capturedAtUtcMicros,
     originalOffsetMinutes: originalOffsetMinutes ?? this.originalOffsetMinutes,
-    sourceTimeZone: sourceTimeZone.present
-        ? sourceTimeZone.value
-        : this.sourceTimeZone,
+    sourceTimeZoneId: sourceTimeZoneId.present
+        ? sourceTimeZoneId.value
+        : this.sourceTimeZoneId,
     visibility: visibility ?? this.visibility,
     revision: revision ?? this.revision,
     createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
   );
   RawCapture copyWithCompanion(RawCapturesCompanion data) {
     return RawCapture(
-      id: data.id.present ? data.id.value : this.id,
+      captureId: data.captureId.present ? data.captureId.value : this.captureId,
       rawText: data.rawText.present ? data.rawText.value : this.rawText,
-      sourceDeviceId: data.sourceDeviceId.present
-          ? data.sourceDeviceId.value
-          : this.sourceDeviceId,
+      sourceInstallationId: data.sourceInstallationId.present
+          ? data.sourceInstallationId.value
+          : this.sourceInstallationId,
       capturedAtUtcMicros: data.capturedAtUtcMicros.present
           ? data.capturedAtUtcMicros.value
           : this.capturedAtUtcMicros,
       originalOffsetMinutes: data.originalOffsetMinutes.present
           ? data.originalOffsetMinutes.value
           : this.originalOffsetMinutes,
-      sourceTimeZone: data.sourceTimeZone.present
-          ? data.sourceTimeZone.value
-          : this.sourceTimeZone,
+      sourceTimeZoneId: data.sourceTimeZoneId.present
+          ? data.sourceTimeZoneId.value
+          : this.sourceTimeZoneId,
       visibility: data.visibility.present
           ? data.visibility.value
           : this.visibility,
@@ -406,12 +413,12 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
   @override
   String toString() {
     return (StringBuffer('RawCapture(')
-          ..write('id: $id, ')
+          ..write('captureId: $captureId, ')
           ..write('rawText: $rawText, ')
-          ..write('sourceDeviceId: $sourceDeviceId, ')
+          ..write('sourceInstallationId: $sourceInstallationId, ')
           ..write('capturedAtUtcMicros: $capturedAtUtcMicros, ')
           ..write('originalOffsetMinutes: $originalOffsetMinutes, ')
-          ..write('sourceTimeZone: $sourceTimeZone, ')
+          ..write('sourceTimeZoneId: $sourceTimeZoneId, ')
           ..write('visibility: $visibility, ')
           ..write('revision: $revision, ')
           ..write('createdAtUtcMicros: $createdAtUtcMicros')
@@ -421,12 +428,12 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
 
   @override
   int get hashCode => Object.hash(
-    id,
+    captureId,
     rawText,
-    sourceDeviceId,
+    sourceInstallationId,
     capturedAtUtcMicros,
     originalOffsetMinutes,
-    sourceTimeZone,
+    sourceTimeZoneId,
     visibility,
     revision,
     createdAtUtcMicros,
@@ -435,80 +442,81 @@ class RawCapture extends DataClass implements Insertable<RawCapture> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is RawCapture &&
-          other.id == this.id &&
+          other.captureId == this.captureId &&
           other.rawText == this.rawText &&
-          other.sourceDeviceId == this.sourceDeviceId &&
+          other.sourceInstallationId == this.sourceInstallationId &&
           other.capturedAtUtcMicros == this.capturedAtUtcMicros &&
           other.originalOffsetMinutes == this.originalOffsetMinutes &&
-          other.sourceTimeZone == this.sourceTimeZone &&
+          other.sourceTimeZoneId == this.sourceTimeZoneId &&
           other.visibility == this.visibility &&
           other.revision == this.revision &&
           other.createdAtUtcMicros == this.createdAtUtcMicros);
 }
 
 class RawCapturesCompanion extends UpdateCompanion<RawCapture> {
-  final Value<String> id;
+  final Value<String> captureId;
   final Value<String> rawText;
-  final Value<String> sourceDeviceId;
+  final Value<String> sourceInstallationId;
   final Value<int> capturedAtUtcMicros;
   final Value<int> originalOffsetMinutes;
-  final Value<String?> sourceTimeZone;
+  final Value<String?> sourceTimeZoneId;
   final Value<String> visibility;
   final Value<int> revision;
   final Value<int> createdAtUtcMicros;
   final Value<int> rowid;
   const RawCapturesCompanion({
-    this.id = const Value.absent(),
+    this.captureId = const Value.absent(),
     this.rawText = const Value.absent(),
-    this.sourceDeviceId = const Value.absent(),
+    this.sourceInstallationId = const Value.absent(),
     this.capturedAtUtcMicros = const Value.absent(),
     this.originalOffsetMinutes = const Value.absent(),
-    this.sourceTimeZone = const Value.absent(),
+    this.sourceTimeZoneId = const Value.absent(),
     this.visibility = const Value.absent(),
     this.revision = const Value.absent(),
     this.createdAtUtcMicros = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RawCapturesCompanion.insert({
-    required String id,
+    required String captureId,
     required String rawText,
-    required String sourceDeviceId,
+    required String sourceInstallationId,
     required int capturedAtUtcMicros,
     required int originalOffsetMinutes,
-    this.sourceTimeZone = const Value.absent(),
+    this.sourceTimeZoneId = const Value.absent(),
     required String visibility,
     required int revision,
     required int createdAtUtcMicros,
     this.rowid = const Value.absent(),
-  }) : id = Value(id),
+  }) : captureId = Value(captureId),
        rawText = Value(rawText),
-       sourceDeviceId = Value(sourceDeviceId),
+       sourceInstallationId = Value(sourceInstallationId),
        capturedAtUtcMicros = Value(capturedAtUtcMicros),
        originalOffsetMinutes = Value(originalOffsetMinutes),
        visibility = Value(visibility),
        revision = Value(revision),
        createdAtUtcMicros = Value(createdAtUtcMicros);
   static Insertable<RawCapture> custom({
-    Expression<String>? id,
+    Expression<String>? captureId,
     Expression<String>? rawText,
-    Expression<String>? sourceDeviceId,
+    Expression<String>? sourceInstallationId,
     Expression<int>? capturedAtUtcMicros,
     Expression<int>? originalOffsetMinutes,
-    Expression<String>? sourceTimeZone,
+    Expression<String>? sourceTimeZoneId,
     Expression<String>? visibility,
     Expression<int>? revision,
     Expression<int>? createdAtUtcMicros,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
+      if (captureId != null) 'capture_id': captureId,
       if (rawText != null) 'raw_text': rawText,
-      if (sourceDeviceId != null) 'source_device_id': sourceDeviceId,
+      if (sourceInstallationId != null)
+        'source_installation_id': sourceInstallationId,
       if (capturedAtUtcMicros != null)
         'captured_at_utc_micros': capturedAtUtcMicros,
       if (originalOffsetMinutes != null)
         'original_offset_minutes': originalOffsetMinutes,
-      if (sourceTimeZone != null) 'source_time_zone': sourceTimeZone,
+      if (sourceTimeZoneId != null) 'source_time_zone_id': sourceTimeZoneId,
       if (visibility != null) 'visibility': visibility,
       if (revision != null) 'revision': revision,
       if (createdAtUtcMicros != null)
@@ -518,25 +526,25 @@ class RawCapturesCompanion extends UpdateCompanion<RawCapture> {
   }
 
   RawCapturesCompanion copyWith({
-    Value<String>? id,
+    Value<String>? captureId,
     Value<String>? rawText,
-    Value<String>? sourceDeviceId,
+    Value<String>? sourceInstallationId,
     Value<int>? capturedAtUtcMicros,
     Value<int>? originalOffsetMinutes,
-    Value<String?>? sourceTimeZone,
+    Value<String?>? sourceTimeZoneId,
     Value<String>? visibility,
     Value<int>? revision,
     Value<int>? createdAtUtcMicros,
     Value<int>? rowid,
   }) {
     return RawCapturesCompanion(
-      id: id ?? this.id,
+      captureId: captureId ?? this.captureId,
       rawText: rawText ?? this.rawText,
-      sourceDeviceId: sourceDeviceId ?? this.sourceDeviceId,
+      sourceInstallationId: sourceInstallationId ?? this.sourceInstallationId,
       capturedAtUtcMicros: capturedAtUtcMicros ?? this.capturedAtUtcMicros,
       originalOffsetMinutes:
           originalOffsetMinutes ?? this.originalOffsetMinutes,
-      sourceTimeZone: sourceTimeZone ?? this.sourceTimeZone,
+      sourceTimeZoneId: sourceTimeZoneId ?? this.sourceTimeZoneId,
       visibility: visibility ?? this.visibility,
       revision: revision ?? this.revision,
       createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
@@ -547,14 +555,16 @@ class RawCapturesCompanion extends UpdateCompanion<RawCapture> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
+    if (captureId.present) {
+      map['capture_id'] = Variable<String>(captureId.value);
     }
     if (rawText.present) {
       map['raw_text'] = Variable<String>(rawText.value);
     }
-    if (sourceDeviceId.present) {
-      map['source_device_id'] = Variable<String>(sourceDeviceId.value);
+    if (sourceInstallationId.present) {
+      map['source_installation_id'] = Variable<String>(
+        sourceInstallationId.value,
+      );
     }
     if (capturedAtUtcMicros.present) {
       map['captured_at_utc_micros'] = Variable<int>(capturedAtUtcMicros.value);
@@ -564,8 +574,8 @@ class RawCapturesCompanion extends UpdateCompanion<RawCapture> {
         originalOffsetMinutes.value,
       );
     }
-    if (sourceTimeZone.present) {
-      map['source_time_zone'] = Variable<String>(sourceTimeZone.value);
+    if (sourceTimeZoneId.present) {
+      map['source_time_zone_id'] = Variable<String>(sourceTimeZoneId.value);
     }
     if (visibility.present) {
       map['visibility'] = Variable<String>(visibility.value);
@@ -585,12 +595,12 @@ class RawCapturesCompanion extends UpdateCompanion<RawCapture> {
   @override
   String toString() {
     return (StringBuffer('RawCapturesCompanion(')
-          ..write('id: $id, ')
+          ..write('captureId: $captureId, ')
           ..write('rawText: $rawText, ')
-          ..write('sourceDeviceId: $sourceDeviceId, ')
+          ..write('sourceInstallationId: $sourceInstallationId, ')
           ..write('capturedAtUtcMicros: $capturedAtUtcMicros, ')
           ..write('originalOffsetMinutes: $originalOffsetMinutes, ')
-          ..write('sourceTimeZone: $sourceTimeZone, ')
+          ..write('sourceTimeZoneId: $sourceTimeZoneId, ')
           ..write('visibility: $visibility, ')
           ..write('revision: $revision, ')
           ..write('createdAtUtcMicros: $createdAtUtcMicros, ')
@@ -606,10 +616,12 @@ class $RawMediaReferencesTable extends RawMediaReferences
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $RawMediaReferencesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _mediaIdMeta = const VerificationMeta(
+    'mediaId',
+  );
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
+  late final GeneratedColumn<String> mediaId = GeneratedColumn<String>(
+    'media_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -626,7 +638,7 @@ class $RawMediaReferencesTable extends RawMediaReferences
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES raw_captures (id)',
+      'REFERENCES raw_captures (capture_id)',
     ),
   );
   static const VerificationMeta _relativePathMeta = const VerificationMeta(
@@ -667,9 +679,9 @@ class $RawMediaReferencesTable extends RawMediaReferences
   late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
     'mime_type',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _codecMeta = const VerificationMeta('codec');
   @override
@@ -678,6 +690,17 @@ class $RawMediaReferencesTable extends RawMediaReferences
     aliasedName,
     true,
     type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMillisMeta = const VerificationMeta(
+    'durationMillis',
+  );
+  @override
+  late final GeneratedColumn<int> durationMillis = GeneratedColumn<int>(
+    'duration_millis',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _createdAtUtcMicrosMeta =
@@ -692,13 +715,14 @@ class $RawMediaReferencesTable extends RawMediaReferences
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
+    mediaId,
     captureId,
     relativePath,
     sha256,
     byteLength,
     mimeType,
     codec,
+    durationMillis,
     createdAtUtcMicros,
   ];
   @override
@@ -713,10 +737,13 @@ class $RawMediaReferencesTable extends RawMediaReferences
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    if (data.containsKey('media_id')) {
+      context.handle(
+        _mediaIdMeta,
+        mediaId.isAcceptableOrUnknown(data['media_id']!, _mediaIdMeta),
+      );
     } else if (isInserting) {
-      context.missing(_idMeta);
+      context.missing(_mediaIdMeta);
     }
     if (data.containsKey('capture_id')) {
       context.handle(
@@ -758,13 +785,20 @@ class $RawMediaReferencesTable extends RawMediaReferences
         _mimeTypeMeta,
         mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta),
       );
-    } else if (isInserting) {
-      context.missing(_mimeTypeMeta);
     }
     if (data.containsKey('codec')) {
       context.handle(
         _codecMeta,
         codec.isAcceptableOrUnknown(data['codec']!, _codecMeta),
+      );
+    }
+    if (data.containsKey('duration_millis')) {
+      context.handle(
+        _durationMillisMeta,
+        durationMillis.isAcceptableOrUnknown(
+          data['duration_millis']!,
+          _durationMillisMeta,
+        ),
       );
     }
     if (data.containsKey('created_at_utc_micros')) {
@@ -782,14 +816,14 @@ class $RawMediaReferencesTable extends RawMediaReferences
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {mediaId};
   @override
   RawMediaReference map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RawMediaReference(
-      id: attachedDatabase.typeMapping.read(
+      mediaId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}id'],
+        data['${effectivePrefix}media_id'],
       )!,
       captureId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -810,10 +844,14 @@ class $RawMediaReferencesTable extends RawMediaReferences
       mimeType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}mime_type'],
-      )!,
+      ),
       codec: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}codec'],
+      ),
+      durationMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_millis'],
       ),
       createdAtUtcMicros: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -830,35 +868,42 @@ class $RawMediaReferencesTable extends RawMediaReferences
 
 class RawMediaReference extends DataClass
     implements Insertable<RawMediaReference> {
-  final String id;
+  final String mediaId;
   final String captureId;
   final String relativePath;
   final String sha256;
   final int byteLength;
-  final String mimeType;
+  final String? mimeType;
   final String? codec;
+  final int? durationMillis;
   final int createdAtUtcMicros;
   const RawMediaReference({
-    required this.id,
+    required this.mediaId,
     required this.captureId,
     required this.relativePath,
     required this.sha256,
     required this.byteLength,
-    required this.mimeType,
+    this.mimeType,
     this.codec,
+    this.durationMillis,
     required this.createdAtUtcMicros,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
+    map['media_id'] = Variable<String>(mediaId);
     map['capture_id'] = Variable<String>(captureId);
     map['relative_path'] = Variable<String>(relativePath);
     map['sha256'] = Variable<String>(sha256);
     map['byte_length'] = Variable<int>(byteLength);
-    map['mime_type'] = Variable<String>(mimeType);
+    if (!nullToAbsent || mimeType != null) {
+      map['mime_type'] = Variable<String>(mimeType);
+    }
     if (!nullToAbsent || codec != null) {
       map['codec'] = Variable<String>(codec);
+    }
+    if (!nullToAbsent || durationMillis != null) {
+      map['duration_millis'] = Variable<int>(durationMillis);
     }
     map['created_at_utc_micros'] = Variable<int>(createdAtUtcMicros);
     return map;
@@ -866,15 +911,20 @@ class RawMediaReference extends DataClass
 
   RawMediaReferencesCompanion toCompanion(bool nullToAbsent) {
     return RawMediaReferencesCompanion(
-      id: Value(id),
+      mediaId: Value(mediaId),
       captureId: Value(captureId),
       relativePath: Value(relativePath),
       sha256: Value(sha256),
       byteLength: Value(byteLength),
-      mimeType: Value(mimeType),
+      mimeType: mimeType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mimeType),
       codec: codec == null && nullToAbsent
           ? const Value.absent()
           : Value(codec),
+      durationMillis: durationMillis == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMillis),
       createdAtUtcMicros: Value(createdAtUtcMicros),
     );
   }
@@ -885,13 +935,14 @@ class RawMediaReference extends DataClass
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return RawMediaReference(
-      id: serializer.fromJson<String>(json['id']),
+      mediaId: serializer.fromJson<String>(json['mediaId']),
       captureId: serializer.fromJson<String>(json['captureId']),
       relativePath: serializer.fromJson<String>(json['relativePath']),
       sha256: serializer.fromJson<String>(json['sha256']),
       byteLength: serializer.fromJson<int>(json['byteLength']),
-      mimeType: serializer.fromJson<String>(json['mimeType']),
+      mimeType: serializer.fromJson<String?>(json['mimeType']),
       codec: serializer.fromJson<String?>(json['codec']),
+      durationMillis: serializer.fromJson<int?>(json['durationMillis']),
       createdAtUtcMicros: serializer.fromJson<int>(json['createdAtUtcMicros']),
     );
   }
@@ -899,39 +950,44 @@ class RawMediaReference extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
+      'mediaId': serializer.toJson<String>(mediaId),
       'captureId': serializer.toJson<String>(captureId),
       'relativePath': serializer.toJson<String>(relativePath),
       'sha256': serializer.toJson<String>(sha256),
       'byteLength': serializer.toJson<int>(byteLength),
-      'mimeType': serializer.toJson<String>(mimeType),
+      'mimeType': serializer.toJson<String?>(mimeType),
       'codec': serializer.toJson<String?>(codec),
+      'durationMillis': serializer.toJson<int?>(durationMillis),
       'createdAtUtcMicros': serializer.toJson<int>(createdAtUtcMicros),
     };
   }
 
   RawMediaReference copyWith({
-    String? id,
+    String? mediaId,
     String? captureId,
     String? relativePath,
     String? sha256,
     int? byteLength,
-    String? mimeType,
+    Value<String?> mimeType = const Value.absent(),
     Value<String?> codec = const Value.absent(),
+    Value<int?> durationMillis = const Value.absent(),
     int? createdAtUtcMicros,
   }) => RawMediaReference(
-    id: id ?? this.id,
+    mediaId: mediaId ?? this.mediaId,
     captureId: captureId ?? this.captureId,
     relativePath: relativePath ?? this.relativePath,
     sha256: sha256 ?? this.sha256,
     byteLength: byteLength ?? this.byteLength,
-    mimeType: mimeType ?? this.mimeType,
+    mimeType: mimeType.present ? mimeType.value : this.mimeType,
     codec: codec.present ? codec.value : this.codec,
+    durationMillis: durationMillis.present
+        ? durationMillis.value
+        : this.durationMillis,
     createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
   );
   RawMediaReference copyWithCompanion(RawMediaReferencesCompanion data) {
     return RawMediaReference(
-      id: data.id.present ? data.id.value : this.id,
+      mediaId: data.mediaId.present ? data.mediaId.value : this.mediaId,
       captureId: data.captureId.present ? data.captureId.value : this.captureId,
       relativePath: data.relativePath.present
           ? data.relativePath.value
@@ -942,6 +998,9 @@ class RawMediaReference extends DataClass
           : this.byteLength,
       mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
       codec: data.codec.present ? data.codec.value : this.codec,
+      durationMillis: data.durationMillis.present
+          ? data.durationMillis.value
+          : this.durationMillis,
       createdAtUtcMicros: data.createdAtUtcMicros.present
           ? data.createdAtUtcMicros.value
           : this.createdAtUtcMicros,
@@ -951,13 +1010,14 @@ class RawMediaReference extends DataClass
   @override
   String toString() {
     return (StringBuffer('RawMediaReference(')
-          ..write('id: $id, ')
+          ..write('mediaId: $mediaId, ')
           ..write('captureId: $captureId, ')
           ..write('relativePath: $relativePath, ')
           ..write('sha256: $sha256, ')
           ..write('byteLength: $byteLength, ')
           ..write('mimeType: $mimeType, ')
           ..write('codec: $codec, ')
+          ..write('durationMillis: $durationMillis, ')
           ..write('createdAtUtcMicros: $createdAtUtcMicros')
           ..write(')'))
         .toString();
@@ -965,86 +1025,92 @@ class RawMediaReference extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    id,
+    mediaId,
     captureId,
     relativePath,
     sha256,
     byteLength,
     mimeType,
     codec,
+    durationMillis,
     createdAtUtcMicros,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is RawMediaReference &&
-          other.id == this.id &&
+          other.mediaId == this.mediaId &&
           other.captureId == this.captureId &&
           other.relativePath == this.relativePath &&
           other.sha256 == this.sha256 &&
           other.byteLength == this.byteLength &&
           other.mimeType == this.mimeType &&
           other.codec == this.codec &&
+          other.durationMillis == this.durationMillis &&
           other.createdAtUtcMicros == this.createdAtUtcMicros);
 }
 
 class RawMediaReferencesCompanion extends UpdateCompanion<RawMediaReference> {
-  final Value<String> id;
+  final Value<String> mediaId;
   final Value<String> captureId;
   final Value<String> relativePath;
   final Value<String> sha256;
   final Value<int> byteLength;
-  final Value<String> mimeType;
+  final Value<String?> mimeType;
   final Value<String?> codec;
+  final Value<int?> durationMillis;
   final Value<int> createdAtUtcMicros;
   final Value<int> rowid;
   const RawMediaReferencesCompanion({
-    this.id = const Value.absent(),
+    this.mediaId = const Value.absent(),
     this.captureId = const Value.absent(),
     this.relativePath = const Value.absent(),
     this.sha256 = const Value.absent(),
     this.byteLength = const Value.absent(),
     this.mimeType = const Value.absent(),
     this.codec = const Value.absent(),
+    this.durationMillis = const Value.absent(),
     this.createdAtUtcMicros = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RawMediaReferencesCompanion.insert({
-    required String id,
+    required String mediaId,
     required String captureId,
     required String relativePath,
     required String sha256,
     required int byteLength,
-    required String mimeType,
+    this.mimeType = const Value.absent(),
     this.codec = const Value.absent(),
+    this.durationMillis = const Value.absent(),
     required int createdAtUtcMicros,
     this.rowid = const Value.absent(),
-  }) : id = Value(id),
+  }) : mediaId = Value(mediaId),
        captureId = Value(captureId),
        relativePath = Value(relativePath),
        sha256 = Value(sha256),
        byteLength = Value(byteLength),
-       mimeType = Value(mimeType),
        createdAtUtcMicros = Value(createdAtUtcMicros);
   static Insertable<RawMediaReference> custom({
-    Expression<String>? id,
+    Expression<String>? mediaId,
     Expression<String>? captureId,
     Expression<String>? relativePath,
     Expression<String>? sha256,
     Expression<int>? byteLength,
     Expression<String>? mimeType,
     Expression<String>? codec,
+    Expression<int>? durationMillis,
     Expression<int>? createdAtUtcMicros,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
+      if (mediaId != null) 'media_id': mediaId,
       if (captureId != null) 'capture_id': captureId,
       if (relativePath != null) 'relative_path': relativePath,
       if (sha256 != null) 'sha256': sha256,
       if (byteLength != null) 'byte_length': byteLength,
       if (mimeType != null) 'mime_type': mimeType,
       if (codec != null) 'codec': codec,
+      if (durationMillis != null) 'duration_millis': durationMillis,
       if (createdAtUtcMicros != null)
         'created_at_utc_micros': createdAtUtcMicros,
       if (rowid != null) 'rowid': rowid,
@@ -1052,24 +1118,26 @@ class RawMediaReferencesCompanion extends UpdateCompanion<RawMediaReference> {
   }
 
   RawMediaReferencesCompanion copyWith({
-    Value<String>? id,
+    Value<String>? mediaId,
     Value<String>? captureId,
     Value<String>? relativePath,
     Value<String>? sha256,
     Value<int>? byteLength,
-    Value<String>? mimeType,
+    Value<String?>? mimeType,
     Value<String?>? codec,
+    Value<int?>? durationMillis,
     Value<int>? createdAtUtcMicros,
     Value<int>? rowid,
   }) {
     return RawMediaReferencesCompanion(
-      id: id ?? this.id,
+      mediaId: mediaId ?? this.mediaId,
       captureId: captureId ?? this.captureId,
       relativePath: relativePath ?? this.relativePath,
       sha256: sha256 ?? this.sha256,
       byteLength: byteLength ?? this.byteLength,
       mimeType: mimeType ?? this.mimeType,
       codec: codec ?? this.codec,
+      durationMillis: durationMillis ?? this.durationMillis,
       createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
       rowid: rowid ?? this.rowid,
     );
@@ -1078,8 +1146,8 @@ class RawMediaReferencesCompanion extends UpdateCompanion<RawMediaReference> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
+    if (mediaId.present) {
+      map['media_id'] = Variable<String>(mediaId.value);
     }
     if (captureId.present) {
       map['capture_id'] = Variable<String>(captureId.value);
@@ -1099,6 +1167,9 @@ class RawMediaReferencesCompanion extends UpdateCompanion<RawMediaReference> {
     if (codec.present) {
       map['codec'] = Variable<String>(codec.value);
     }
+    if (durationMillis.present) {
+      map['duration_millis'] = Variable<int>(durationMillis.value);
+    }
     if (createdAtUtcMicros.present) {
       map['created_at_utc_micros'] = Variable<int>(createdAtUtcMicros.value);
     }
@@ -1111,13 +1182,14 @@ class RawMediaReferencesCompanion extends UpdateCompanion<RawMediaReference> {
   @override
   String toString() {
     return (StringBuffer('RawMediaReferencesCompanion(')
-          ..write('id: $id, ')
+          ..write('mediaId: $mediaId, ')
           ..write('captureId: $captureId, ')
           ..write('relativePath: $relativePath, ')
           ..write('sha256: $sha256, ')
           ..write('byteLength: $byteLength, ')
           ..write('mimeType: $mimeType, ')
           ..write('codec: $codec, ')
+          ..write('durationMillis: $durationMillis, ')
           ..write('createdAtUtcMicros: $createdAtUtcMicros, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1131,27 +1203,29 @@ class $DerivedArtifactsTable extends DerivedArtifacts
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $DerivedArtifactsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _artifactIdMeta = const VerificationMeta(
+    'artifactId',
+  );
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
+  late final GeneratedColumn<String> artifactId = GeneratedColumn<String>(
+    'artifact_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _captureIdMeta = const VerificationMeta(
-    'captureId',
+  static const VerificationMeta _sourceCaptureIdMeta = const VerificationMeta(
+    'sourceCaptureId',
   );
   @override
-  late final GeneratedColumn<String> captureId = GeneratedColumn<String>(
-    'capture_id',
+  late final GeneratedColumn<String> sourceCaptureId = GeneratedColumn<String>(
+    'source_capture_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES raw_captures (id)',
+      'REFERENCES raw_captures (capture_id)',
     ),
   );
   static const VerificationMeta _artifactKindMeta = const VerificationMeta(
@@ -1199,8 +1273,8 @@ class $DerivedArtifactsTable extends DerivedArtifacts
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    captureId,
+    artifactId,
+    sourceCaptureId,
     artifactKind,
     content,
     provenance,
@@ -1218,18 +1292,24 @@ class $DerivedArtifactsTable extends DerivedArtifacts
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('capture_id')) {
+    if (data.containsKey('artifact_id')) {
       context.handle(
-        _captureIdMeta,
-        captureId.isAcceptableOrUnknown(data['capture_id']!, _captureIdMeta),
+        _artifactIdMeta,
+        artifactId.isAcceptableOrUnknown(data['artifact_id']!, _artifactIdMeta),
       );
     } else if (isInserting) {
-      context.missing(_captureIdMeta);
+      context.missing(_artifactIdMeta);
+    }
+    if (data.containsKey('source_capture_id')) {
+      context.handle(
+        _sourceCaptureIdMeta,
+        sourceCaptureId.isAcceptableOrUnknown(
+          data['source_capture_id']!,
+          _sourceCaptureIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceCaptureIdMeta);
     }
     if (data.containsKey('artifact_kind')) {
       context.handle(
@@ -1273,18 +1353,18 @@ class $DerivedArtifactsTable extends DerivedArtifacts
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {artifactId};
   @override
   DerivedArtifact map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DerivedArtifact(
-      id: attachedDatabase.typeMapping.read(
+      artifactId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}id'],
+        data['${effectivePrefix}artifact_id'],
       )!,
-      captureId: attachedDatabase.typeMapping.read(
+      sourceCaptureId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}capture_id'],
+        data['${effectivePrefix}source_capture_id'],
       )!,
       artifactKind: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1312,15 +1392,15 @@ class $DerivedArtifactsTable extends DerivedArtifacts
 }
 
 class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
-  final String id;
-  final String captureId;
+  final String artifactId;
+  final String sourceCaptureId;
   final String artifactKind;
   final String content;
   final String provenance;
   final int createdAtUtcMicros;
   const DerivedArtifact({
-    required this.id,
-    required this.captureId,
+    required this.artifactId,
+    required this.sourceCaptureId,
     required this.artifactKind,
     required this.content,
     required this.provenance,
@@ -1329,8 +1409,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['capture_id'] = Variable<String>(captureId);
+    map['artifact_id'] = Variable<String>(artifactId);
+    map['source_capture_id'] = Variable<String>(sourceCaptureId);
     map['artifact_kind'] = Variable<String>(artifactKind);
     map['content'] = Variable<String>(content);
     map['provenance'] = Variable<String>(provenance);
@@ -1340,8 +1420,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
 
   DerivedArtifactsCompanion toCompanion(bool nullToAbsent) {
     return DerivedArtifactsCompanion(
-      id: Value(id),
-      captureId: Value(captureId),
+      artifactId: Value(artifactId),
+      sourceCaptureId: Value(sourceCaptureId),
       artifactKind: Value(artifactKind),
       content: Value(content),
       provenance: Value(provenance),
@@ -1355,8 +1435,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DerivedArtifact(
-      id: serializer.fromJson<String>(json['id']),
-      captureId: serializer.fromJson<String>(json['captureId']),
+      artifactId: serializer.fromJson<String>(json['artifactId']),
+      sourceCaptureId: serializer.fromJson<String>(json['sourceCaptureId']),
       artifactKind: serializer.fromJson<String>(json['artifactKind']),
       content: serializer.fromJson<String>(json['content']),
       provenance: serializer.fromJson<String>(json['provenance']),
@@ -1367,8 +1447,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'captureId': serializer.toJson<String>(captureId),
+      'artifactId': serializer.toJson<String>(artifactId),
+      'sourceCaptureId': serializer.toJson<String>(sourceCaptureId),
       'artifactKind': serializer.toJson<String>(artifactKind),
       'content': serializer.toJson<String>(content),
       'provenance': serializer.toJson<String>(provenance),
@@ -1377,15 +1457,15 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   }
 
   DerivedArtifact copyWith({
-    String? id,
-    String? captureId,
+    String? artifactId,
+    String? sourceCaptureId,
     String? artifactKind,
     String? content,
     String? provenance,
     int? createdAtUtcMicros,
   }) => DerivedArtifact(
-    id: id ?? this.id,
-    captureId: captureId ?? this.captureId,
+    artifactId: artifactId ?? this.artifactId,
+    sourceCaptureId: sourceCaptureId ?? this.sourceCaptureId,
     artifactKind: artifactKind ?? this.artifactKind,
     content: content ?? this.content,
     provenance: provenance ?? this.provenance,
@@ -1393,8 +1473,12 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   );
   DerivedArtifact copyWithCompanion(DerivedArtifactsCompanion data) {
     return DerivedArtifact(
-      id: data.id.present ? data.id.value : this.id,
-      captureId: data.captureId.present ? data.captureId.value : this.captureId,
+      artifactId: data.artifactId.present
+          ? data.artifactId.value
+          : this.artifactId,
+      sourceCaptureId: data.sourceCaptureId.present
+          ? data.sourceCaptureId.value
+          : this.sourceCaptureId,
       artifactKind: data.artifactKind.present
           ? data.artifactKind.value
           : this.artifactKind,
@@ -1411,8 +1495,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   @override
   String toString() {
     return (StringBuffer('DerivedArtifact(')
-          ..write('id: $id, ')
-          ..write('captureId: $captureId, ')
+          ..write('artifactId: $artifactId, ')
+          ..write('sourceCaptureId: $sourceCaptureId, ')
           ..write('artifactKind: $artifactKind, ')
           ..write('content: $content, ')
           ..write('provenance: $provenance, ')
@@ -1423,8 +1507,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
 
   @override
   int get hashCode => Object.hash(
-    id,
-    captureId,
+    artifactId,
+    sourceCaptureId,
     artifactKind,
     content,
     provenance,
@@ -1434,8 +1518,8 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DerivedArtifact &&
-          other.id == this.id &&
-          other.captureId == this.captureId &&
+          other.artifactId == this.artifactId &&
+          other.sourceCaptureId == this.sourceCaptureId &&
           other.artifactKind == this.artifactKind &&
           other.content == this.content &&
           other.provenance == this.provenance &&
@@ -1443,16 +1527,16 @@ class DerivedArtifact extends DataClass implements Insertable<DerivedArtifact> {
 }
 
 class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
-  final Value<String> id;
-  final Value<String> captureId;
+  final Value<String> artifactId;
+  final Value<String> sourceCaptureId;
   final Value<String> artifactKind;
   final Value<String> content;
   final Value<String> provenance;
   final Value<int> createdAtUtcMicros;
   final Value<int> rowid;
   const DerivedArtifactsCompanion({
-    this.id = const Value.absent(),
-    this.captureId = const Value.absent(),
+    this.artifactId = const Value.absent(),
+    this.sourceCaptureId = const Value.absent(),
     this.artifactKind = const Value.absent(),
     this.content = const Value.absent(),
     this.provenance = const Value.absent(),
@@ -1460,22 +1544,22 @@ class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
     this.rowid = const Value.absent(),
   });
   DerivedArtifactsCompanion.insert({
-    required String id,
-    required String captureId,
+    required String artifactId,
+    required String sourceCaptureId,
     required String artifactKind,
     required String content,
     required String provenance,
     required int createdAtUtcMicros,
     this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       captureId = Value(captureId),
+  }) : artifactId = Value(artifactId),
+       sourceCaptureId = Value(sourceCaptureId),
        artifactKind = Value(artifactKind),
        content = Value(content),
        provenance = Value(provenance),
        createdAtUtcMicros = Value(createdAtUtcMicros);
   static Insertable<DerivedArtifact> custom({
-    Expression<String>? id,
-    Expression<String>? captureId,
+    Expression<String>? artifactId,
+    Expression<String>? sourceCaptureId,
     Expression<String>? artifactKind,
     Expression<String>? content,
     Expression<String>? provenance,
@@ -1483,8 +1567,8 @@ class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (captureId != null) 'capture_id': captureId,
+      if (artifactId != null) 'artifact_id': artifactId,
+      if (sourceCaptureId != null) 'source_capture_id': sourceCaptureId,
       if (artifactKind != null) 'artifact_kind': artifactKind,
       if (content != null) 'content': content,
       if (provenance != null) 'provenance': provenance,
@@ -1495,8 +1579,8 @@ class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
   }
 
   DerivedArtifactsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? captureId,
+    Value<String>? artifactId,
+    Value<String>? sourceCaptureId,
     Value<String>? artifactKind,
     Value<String>? content,
     Value<String>? provenance,
@@ -1504,8 +1588,8 @@ class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
     Value<int>? rowid,
   }) {
     return DerivedArtifactsCompanion(
-      id: id ?? this.id,
-      captureId: captureId ?? this.captureId,
+      artifactId: artifactId ?? this.artifactId,
+      sourceCaptureId: sourceCaptureId ?? this.sourceCaptureId,
       artifactKind: artifactKind ?? this.artifactKind,
       content: content ?? this.content,
       provenance: provenance ?? this.provenance,
@@ -1517,11 +1601,11 @@ class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
+    if (artifactId.present) {
+      map['artifact_id'] = Variable<String>(artifactId.value);
     }
-    if (captureId.present) {
-      map['capture_id'] = Variable<String>(captureId.value);
+    if (sourceCaptureId.present) {
+      map['source_capture_id'] = Variable<String>(sourceCaptureId.value);
     }
     if (artifactKind.present) {
       map['artifact_kind'] = Variable<String>(artifactKind.value);
@@ -1544,8 +1628,8 @@ class DerivedArtifactsCompanion extends UpdateCompanion<DerivedArtifact> {
   @override
   String toString() {
     return (StringBuffer('DerivedArtifactsCompanion(')
-          ..write('id: $id, ')
-          ..write('captureId: $captureId, ')
+          ..write('artifactId: $artifactId, ')
+          ..write('sourceCaptureId: $sourceCaptureId, ')
           ..write('artifactKind: $artifactKind, ')
           ..write('content: $content, ')
           ..write('provenance: $provenance, ')
@@ -1578,12 +1662,12 @@ abstract class _$Stage0Database extends GeneratedDatabase {
 
 typedef $$RawCapturesTableCreateCompanionBuilder =
     RawCapturesCompanion Function({
-      required String id,
+      required String captureId,
       required String rawText,
-      required String sourceDeviceId,
+      required String sourceInstallationId,
       required int capturedAtUtcMicros,
       required int originalOffsetMinutes,
-      Value<String?> sourceTimeZone,
+      Value<String?> sourceTimeZoneId,
       required String visibility,
       required int revision,
       required int createdAtUtcMicros,
@@ -1591,12 +1675,12 @@ typedef $$RawCapturesTableCreateCompanionBuilder =
     });
 typedef $$RawCapturesTableUpdateCompanionBuilder =
     RawCapturesCompanion Function({
-      Value<String> id,
+      Value<String> captureId,
       Value<String> rawText,
-      Value<String> sourceDeviceId,
+      Value<String> sourceInstallationId,
       Value<int> capturedAtUtcMicros,
       Value<int> originalOffsetMinutes,
-      Value<String?> sourceTimeZone,
+      Value<String?> sourceTimeZoneId,
       Value<String> visibility,
       Value<int> revision,
       Value<int> createdAtUtcMicros,
@@ -1611,14 +1695,19 @@ final class $$RawCapturesTableReferences
   _rawMediaReferencesRefsTable(_$Stage0Database db) =>
       MultiTypedResultKey.fromTable(
         db.rawMediaReferences,
-        aliasName: 'raw_captures__id__raw_media_references__capture_id',
+        aliasName: 'raw_captures__capture_id__raw_media_references__capture_id',
       );
 
   $$RawMediaReferencesTableProcessedTableManager get rawMediaReferencesRefs {
-    final manager = $$RawMediaReferencesTableTableManager(
-      $_db,
-      $_db.rawMediaReferences,
-    ).filter((f) => f.captureId.id.sqlEquals($_itemColumn<String>('id')!));
+    final manager =
+        $$RawMediaReferencesTableTableManager(
+          $_db,
+          $_db.rawMediaReferences,
+        ).filter(
+          (f) => f.captureId.captureId.sqlEquals(
+            $_itemColumn<String>('capture_id')!,
+          ),
+        );
 
     final cache = $_typedResult.readTableOrNull(
       _rawMediaReferencesRefsTable($_db),
@@ -1632,14 +1721,17 @@ final class $$RawCapturesTableReferences
   _derivedArtifactsRefsTable(_$Stage0Database db) =>
       MultiTypedResultKey.fromTable(
         db.derivedArtifacts,
-        aliasName: 'raw_captures__id__derived_artifacts__capture_id',
+        aliasName:
+            'raw_captures__capture_id__derived_artifacts__source_capture_id',
       );
 
   $$DerivedArtifactsTableProcessedTableManager get derivedArtifactsRefs {
-    final manager = $$DerivedArtifactsTableTableManager(
-      $_db,
-      $_db.derivedArtifacts,
-    ).filter((f) => f.captureId.id.sqlEquals($_itemColumn<String>('id')!));
+    final manager =
+        $$DerivedArtifactsTableTableManager($_db, $_db.derivedArtifacts).filter(
+          (f) => f.sourceCaptureId.captureId.sqlEquals(
+            $_itemColumn<String>('capture_id')!,
+          ),
+        );
 
     final cache = $_typedResult.readTableOrNull(
       _derivedArtifactsRefsTable($_db),
@@ -1659,8 +1751,8 @@ class $$RawCapturesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnFilters<String> get captureId => $composableBuilder(
+    column: $table.captureId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1669,8 +1761,8 @@ class $$RawCapturesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get sourceDeviceId => $composableBuilder(
-    column: $table.sourceDeviceId,
+  ColumnFilters<String> get sourceInstallationId => $composableBuilder(
+    column: $table.sourceInstallationId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1684,8 +1776,8 @@ class $$RawCapturesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get sourceTimeZone => $composableBuilder(
-    column: $table.sourceTimeZone,
+  ColumnFilters<String> get sourceTimeZoneId => $composableBuilder(
+    column: $table.sourceTimeZoneId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1709,7 +1801,7 @@ class $$RawCapturesTableFilterComposer
   ) {
     final $$RawMediaReferencesTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.captureId,
       referencedTable: $db.rawMediaReferences,
       getReferencedColumn: (t) => t.captureId,
       builder:
@@ -1734,9 +1826,9 @@ class $$RawCapturesTableFilterComposer
   ) {
     final $$DerivedArtifactsTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.captureId,
       referencedTable: $db.derivedArtifacts,
-      getReferencedColumn: (t) => t.captureId,
+      getReferencedColumn: (t) => t.sourceCaptureId,
       builder:
           (
             joinBuilder, {
@@ -1764,8 +1856,8 @@ class $$RawCapturesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnOrderings<String> get captureId => $composableBuilder(
+    column: $table.captureId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1774,8 +1866,8 @@ class $$RawCapturesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get sourceDeviceId => $composableBuilder(
-    column: $table.sourceDeviceId,
+  ColumnOrderings<String> get sourceInstallationId => $composableBuilder(
+    column: $table.sourceInstallationId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1789,8 +1881,8 @@ class $$RawCapturesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get sourceTimeZone => $composableBuilder(
-    column: $table.sourceTimeZone,
+  ColumnOrderings<String> get sourceTimeZoneId => $composableBuilder(
+    column: $table.sourceTimeZoneId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1819,14 +1911,14 @@ class $$RawCapturesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<String> get captureId =>
+      $composableBuilder(column: $table.captureId, builder: (column) => column);
 
   GeneratedColumn<String> get rawText =>
       $composableBuilder(column: $table.rawText, builder: (column) => column);
 
-  GeneratedColumn<String> get sourceDeviceId => $composableBuilder(
-    column: $table.sourceDeviceId,
+  GeneratedColumn<String> get sourceInstallationId => $composableBuilder(
+    column: $table.sourceInstallationId,
     builder: (column) => column,
   );
 
@@ -1840,8 +1932,8 @@ class $$RawCapturesTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get sourceTimeZone => $composableBuilder(
-    column: $table.sourceTimeZone,
+  GeneratedColumn<String> get sourceTimeZoneId => $composableBuilder(
+    column: $table.sourceTimeZoneId,
     builder: (column) => column,
   );
 
@@ -1864,7 +1956,7 @@ class $$RawCapturesTableAnnotationComposer
     final $$RawMediaReferencesTableAnnotationComposer composer =
         $composerBuilder(
           composer: this,
-          getCurrentColumn: (t) => t.id,
+          getCurrentColumn: (t) => t.captureId,
           referencedTable: $db.rawMediaReferences,
           getReferencedColumn: (t) => t.captureId,
           builder:
@@ -1889,9 +1981,9 @@ class $$RawCapturesTableAnnotationComposer
   ) {
     final $$DerivedArtifactsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.captureId,
       referencedTable: $db.derivedArtifacts,
-      getReferencedColumn: (t) => t.captureId,
+      getReferencedColumn: (t) => t.sourceCaptureId,
       builder:
           (
             joinBuilder, {
@@ -1941,23 +2033,23 @@ class $$RawCapturesTableTableManager
               $$RawCapturesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> id = const Value.absent(),
+                Value<String> captureId = const Value.absent(),
                 Value<String> rawText = const Value.absent(),
-                Value<String> sourceDeviceId = const Value.absent(),
+                Value<String> sourceInstallationId = const Value.absent(),
                 Value<int> capturedAtUtcMicros = const Value.absent(),
                 Value<int> originalOffsetMinutes = const Value.absent(),
-                Value<String?> sourceTimeZone = const Value.absent(),
+                Value<String?> sourceTimeZoneId = const Value.absent(),
                 Value<String> visibility = const Value.absent(),
                 Value<int> revision = const Value.absent(),
                 Value<int> createdAtUtcMicros = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RawCapturesCompanion(
-                id: id,
+                captureId: captureId,
                 rawText: rawText,
-                sourceDeviceId: sourceDeviceId,
+                sourceInstallationId: sourceInstallationId,
                 capturedAtUtcMicros: capturedAtUtcMicros,
                 originalOffsetMinutes: originalOffsetMinutes,
-                sourceTimeZone: sourceTimeZone,
+                sourceTimeZoneId: sourceTimeZoneId,
                 visibility: visibility,
                 revision: revision,
                 createdAtUtcMicros: createdAtUtcMicros,
@@ -1965,23 +2057,23 @@ class $$RawCapturesTableTableManager
               ),
           createCompanionCallback:
               ({
-                required String id,
+                required String captureId,
                 required String rawText,
-                required String sourceDeviceId,
+                required String sourceInstallationId,
                 required int capturedAtUtcMicros,
                 required int originalOffsetMinutes,
-                Value<String?> sourceTimeZone = const Value.absent(),
+                Value<String?> sourceTimeZoneId = const Value.absent(),
                 required String visibility,
                 required int revision,
                 required int createdAtUtcMicros,
                 Value<int> rowid = const Value.absent(),
               }) => RawCapturesCompanion.insert(
-                id: id,
+                captureId: captureId,
                 rawText: rawText,
-                sourceDeviceId: sourceDeviceId,
+                sourceInstallationId: sourceInstallationId,
                 capturedAtUtcMicros: capturedAtUtcMicros,
                 originalOffsetMinutes: originalOffsetMinutes,
-                sourceTimeZone: sourceTimeZone,
+                sourceTimeZoneId: sourceTimeZoneId,
                 visibility: visibility,
                 revision: revision,
                 createdAtUtcMicros: createdAtUtcMicros,
@@ -2023,7 +2115,7 @@ class $$RawCapturesTableTableManager
                               ).rawMediaReferencesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
-                                (e) => e.captureId == item.id,
+                                (e) => e.captureId == item.captureId,
                               ),
                           typedResults: items,
                         ),
@@ -2044,7 +2136,7 @@ class $$RawCapturesTableTableManager
                               ).derivedArtifactsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
-                                (e) => e.captureId == item.id,
+                                (e) => e.sourceCaptureId == item.captureId,
                               ),
                           typedResults: items,
                         ),
@@ -2075,25 +2167,27 @@ typedef $$RawCapturesTableProcessedTableManager =
     >;
 typedef $$RawMediaReferencesTableCreateCompanionBuilder =
     RawMediaReferencesCompanion Function({
-      required String id,
+      required String mediaId,
       required String captureId,
       required String relativePath,
       required String sha256,
       required int byteLength,
-      required String mimeType,
+      Value<String?> mimeType,
       Value<String?> codec,
+      Value<int?> durationMillis,
       required int createdAtUtcMicros,
       Value<int> rowid,
     });
 typedef $$RawMediaReferencesTableUpdateCompanionBuilder =
     RawMediaReferencesCompanion Function({
-      Value<String> id,
+      Value<String> mediaId,
       Value<String> captureId,
       Value<String> relativePath,
       Value<String> sha256,
       Value<int> byteLength,
-      Value<String> mimeType,
+      Value<String?> mimeType,
       Value<String?> codec,
+      Value<int?> durationMillis,
       Value<int> createdAtUtcMicros,
       Value<int> rowid,
     });
@@ -2111,9 +2205,10 @@ final class $$RawMediaReferencesTableReferences
     super.$_typedResult,
   );
 
-  static $RawCapturesTable _captureIdTable(_$Stage0Database db) => db
-      .rawCaptures
-      .createAlias('raw_media_references__capture_id__raw_captures__id');
+  static $RawCapturesTable _captureIdTable(_$Stage0Database db) =>
+      db.rawCaptures.createAlias(
+        'raw_media_references__capture_id__raw_captures__capture_id',
+      );
 
   $$RawCapturesTableProcessedTableManager get captureId {
     final $_column = $_itemColumn<String>('capture_id')!;
@@ -2121,7 +2216,7 @@ final class $$RawMediaReferencesTableReferences
     final manager = $$RawCapturesTableTableManager(
       $_db,
       $_db.rawCaptures,
-    ).filter((f) => f.id.sqlEquals($_column));
+    ).filter((f) => f.captureId.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_captureIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
@@ -2139,8 +2234,8 @@ class $$RawMediaReferencesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnFilters<String> get mediaId => $composableBuilder(
+    column: $table.mediaId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2169,6 +2264,11 @@ class $$RawMediaReferencesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get durationMillis => $composableBuilder(
+    column: $table.durationMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get createdAtUtcMicros => $composableBuilder(
     column: $table.createdAtUtcMicros,
     builder: (column) => ColumnFilters(column),
@@ -2179,7 +2279,7 @@ class $$RawMediaReferencesTableFilterComposer
       composer: this,
       getCurrentColumn: (t) => t.captureId,
       referencedTable: $db.rawCaptures,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.captureId,
       builder:
           (
             joinBuilder, {
@@ -2207,8 +2307,8 @@ class $$RawMediaReferencesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnOrderings<String> get mediaId => $composableBuilder(
+    column: $table.mediaId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2237,6 +2337,11 @@ class $$RawMediaReferencesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get durationMillis => $composableBuilder(
+    column: $table.durationMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get createdAtUtcMicros => $composableBuilder(
     column: $table.createdAtUtcMicros,
     builder: (column) => ColumnOrderings(column),
@@ -2247,7 +2352,7 @@ class $$RawMediaReferencesTableOrderingComposer
       composer: this,
       getCurrentColumn: (t) => t.captureId,
       referencedTable: $db.rawCaptures,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.captureId,
       builder:
           (
             joinBuilder, {
@@ -2275,8 +2380,8 @@ class $$RawMediaReferencesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<String> get mediaId =>
+      $composableBuilder(column: $table.mediaId, builder: (column) => column);
 
   GeneratedColumn<String> get relativePath => $composableBuilder(
     column: $table.relativePath,
@@ -2297,6 +2402,11 @@ class $$RawMediaReferencesTableAnnotationComposer
   GeneratedColumn<String> get codec =>
       $composableBuilder(column: $table.codec, builder: (column) => column);
 
+  GeneratedColumn<int> get durationMillis => $composableBuilder(
+    column: $table.durationMillis,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get createdAtUtcMicros => $composableBuilder(
     column: $table.createdAtUtcMicros,
     builder: (column) => column,
@@ -2307,7 +2417,7 @@ class $$RawMediaReferencesTableAnnotationComposer
       composer: this,
       getCurrentColumn: (t) => t.captureId,
       referencedTable: $db.rawCaptures,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.captureId,
       builder:
           (
             joinBuilder, {
@@ -2359,45 +2469,49 @@ class $$RawMediaReferencesTableTableManager
               ),
           updateCompanionCallback:
               ({
-                Value<String> id = const Value.absent(),
+                Value<String> mediaId = const Value.absent(),
                 Value<String> captureId = const Value.absent(),
                 Value<String> relativePath = const Value.absent(),
                 Value<String> sha256 = const Value.absent(),
                 Value<int> byteLength = const Value.absent(),
-                Value<String> mimeType = const Value.absent(),
+                Value<String?> mimeType = const Value.absent(),
                 Value<String?> codec = const Value.absent(),
+                Value<int?> durationMillis = const Value.absent(),
                 Value<int> createdAtUtcMicros = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RawMediaReferencesCompanion(
-                id: id,
+                mediaId: mediaId,
                 captureId: captureId,
                 relativePath: relativePath,
                 sha256: sha256,
                 byteLength: byteLength,
                 mimeType: mimeType,
                 codec: codec,
+                durationMillis: durationMillis,
                 createdAtUtcMicros: createdAtUtcMicros,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String id,
+                required String mediaId,
                 required String captureId,
                 required String relativePath,
                 required String sha256,
                 required int byteLength,
-                required String mimeType,
+                Value<String?> mimeType = const Value.absent(),
                 Value<String?> codec = const Value.absent(),
+                Value<int?> durationMillis = const Value.absent(),
                 required int createdAtUtcMicros,
                 Value<int> rowid = const Value.absent(),
               }) => RawMediaReferencesCompanion.insert(
-                id: id,
+                mediaId: mediaId,
                 captureId: captureId,
                 relativePath: relativePath,
                 sha256: sha256,
                 byteLength: byteLength,
                 mimeType: mimeType,
                 codec: codec,
+                durationMillis: durationMillis,
                 createdAtUtcMicros: createdAtUtcMicros,
                 rowid: rowid,
               ),
@@ -2437,7 +2551,7 @@ class $$RawMediaReferencesTableTableManager
                             ._captureIdTable(db),
                         referencedColumn: $$RawMediaReferencesTableReferences
                             ._captureIdTable(db)
-                            .id,
+                            .captureId,
                       ) as T;
                     }
 
@@ -2468,8 +2582,8 @@ typedef $$RawMediaReferencesTableProcessedTableManager =
     >;
 typedef $$DerivedArtifactsTableCreateCompanionBuilder =
     DerivedArtifactsCompanion Function({
-      required String id,
-      required String captureId,
+      required String artifactId,
+      required String sourceCaptureId,
       required String artifactKind,
       required String content,
       required String provenance,
@@ -2478,8 +2592,8 @@ typedef $$DerivedArtifactsTableCreateCompanionBuilder =
     });
 typedef $$DerivedArtifactsTableUpdateCompanionBuilder =
     DerivedArtifactsCompanion Function({
-      Value<String> id,
-      Value<String> captureId,
+      Value<String> artifactId,
+      Value<String> sourceCaptureId,
       Value<String> artifactKind,
       Value<String> content,
       Value<String> provenance,
@@ -2500,18 +2614,19 @@ final class $$DerivedArtifactsTableReferences
     super.$_typedResult,
   );
 
-  static $RawCapturesTable _captureIdTable(_$Stage0Database db) => db
-      .rawCaptures
-      .createAlias('derived_artifacts__capture_id__raw_captures__id');
+  static $RawCapturesTable _sourceCaptureIdTable(_$Stage0Database db) =>
+      db.rawCaptures.createAlias(
+        'derived_artifacts__source_capture_id__raw_captures__capture_id',
+      );
 
-  $$RawCapturesTableProcessedTableManager get captureId {
-    final $_column = $_itemColumn<String>('capture_id')!;
+  $$RawCapturesTableProcessedTableManager get sourceCaptureId {
+    final $_column = $_itemColumn<String>('source_capture_id')!;
 
     final manager = $$RawCapturesTableTableManager(
       $_db,
       $_db.rawCaptures,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_captureIdTable($_db));
+    ).filter((f) => f.captureId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sourceCaptureIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -2528,8 +2643,8 @@ class $$DerivedArtifactsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnFilters<String> get artifactId => $composableBuilder(
+    column: $table.artifactId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2553,12 +2668,12 @@ class $$DerivedArtifactsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$RawCapturesTableFilterComposer get captureId {
+  $$RawCapturesTableFilterComposer get sourceCaptureId {
     final $$RawCapturesTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.captureId,
+      getCurrentColumn: (t) => t.sourceCaptureId,
       referencedTable: $db.rawCaptures,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.captureId,
       builder:
           (
             joinBuilder, {
@@ -2586,8 +2701,8 @@ class $$DerivedArtifactsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnOrderings<String> get artifactId => $composableBuilder(
+    column: $table.artifactId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2611,12 +2726,12 @@ class $$DerivedArtifactsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$RawCapturesTableOrderingComposer get captureId {
+  $$RawCapturesTableOrderingComposer get sourceCaptureId {
     final $$RawCapturesTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.captureId,
+      getCurrentColumn: (t) => t.sourceCaptureId,
       referencedTable: $db.rawCaptures,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.captureId,
       builder:
           (
             joinBuilder, {
@@ -2644,8 +2759,10 @@ class $$DerivedArtifactsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<String> get artifactId => $composableBuilder(
+    column: $table.artifactId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get artifactKind => $composableBuilder(
     column: $table.artifactKind,
@@ -2665,12 +2782,12 @@ class $$DerivedArtifactsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$RawCapturesTableAnnotationComposer get captureId {
+  $$RawCapturesTableAnnotationComposer get sourceCaptureId {
     final $$RawCapturesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.captureId,
+      getCurrentColumn: (t) => t.sourceCaptureId,
       referencedTable: $db.rawCaptures,
-      getReferencedColumn: (t) => t.id,
+      getReferencedColumn: (t) => t.captureId,
       builder:
           (
             joinBuilder, {
@@ -2702,7 +2819,7 @@ class $$DerivedArtifactsTableTableManager
           $$DerivedArtifactsTableUpdateCompanionBuilder,
           (DerivedArtifact, $$DerivedArtifactsTableReferences),
           DerivedArtifact,
-          PrefetchHooks Function({bool captureId})
+          PrefetchHooks Function({bool sourceCaptureId})
         > {
   $$DerivedArtifactsTableTableManager(
     _$Stage0Database db,
@@ -2719,16 +2836,16 @@ class $$DerivedArtifactsTableTableManager
               $$DerivedArtifactsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> id = const Value.absent(),
-                Value<String> captureId = const Value.absent(),
+                Value<String> artifactId = const Value.absent(),
+                Value<String> sourceCaptureId = const Value.absent(),
                 Value<String> artifactKind = const Value.absent(),
                 Value<String> content = const Value.absent(),
                 Value<String> provenance = const Value.absent(),
                 Value<int> createdAtUtcMicros = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DerivedArtifactsCompanion(
-                id: id,
-                captureId: captureId,
+                artifactId: artifactId,
+                sourceCaptureId: sourceCaptureId,
                 artifactKind: artifactKind,
                 content: content,
                 provenance: provenance,
@@ -2737,16 +2854,16 @@ class $$DerivedArtifactsTableTableManager
               ),
           createCompanionCallback:
               ({
-                required String id,
-                required String captureId,
+                required String artifactId,
+                required String sourceCaptureId,
                 required String artifactKind,
                 required String content,
                 required String provenance,
                 required int createdAtUtcMicros,
                 Value<int> rowid = const Value.absent(),
               }) => DerivedArtifactsCompanion.insert(
-                id: id,
-                captureId: captureId,
+                artifactId: artifactId,
+                sourceCaptureId: sourceCaptureId,
                 artifactKind: artifactKind,
                 content: content,
                 provenance: provenance,
@@ -2761,7 +2878,7 @@ class $$DerivedArtifactsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({captureId = false}) {
+          prefetchHooksCallback: ({sourceCaptureId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -2781,15 +2898,15 @@ class $$DerivedArtifactsTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (captureId) {
+                    if (sourceCaptureId) {
                       state = state.withJoin(
                         currentTable: table,
-                        currentColumn: table.captureId,
+                        currentColumn: table.sourceCaptureId,
                         referencedTable: $$DerivedArtifactsTableReferences
-                            ._captureIdTable(db),
+                            ._sourceCaptureIdTable(db),
                         referencedColumn: $$DerivedArtifactsTableReferences
-                            ._captureIdTable(db)
-                            .id,
+                            ._sourceCaptureIdTable(db)
+                            .captureId,
                       ) as T;
                     }
 
@@ -2816,7 +2933,7 @@ typedef $$DerivedArtifactsTableProcessedTableManager =
       $$DerivedArtifactsTableUpdateCompanionBuilder,
       (DerivedArtifact, $$DerivedArtifactsTableReferences),
       DerivedArtifact,
-      PrefetchHooks Function({bool captureId})
+      PrefetchHooks Function({bool sourceCaptureId})
     >;
 
 class $Stage0DatabaseManager {

@@ -11,7 +11,7 @@ const _captureId = '018f0000-0000-7000-8000-000000000001';
 const _artifactId = '018f0000-0000-7000-8000-000000000002';
 const _prototypeRawText =
     'PROTOTYPE ONLY: Stage 0 raw capture; never user data.';
-const _sourceDeviceId = 'PROTOTYPE-WINDOWS-DEVICE';
+const _sourceInstallationId = '123e4567-e89b-42d3-a456-426614174000';
 const _capturedAtUtcMicros = 1735689600123456;
 const _createdAtUtcMicros = 1735689601123456;
 const _offsetMinutes = 480;
@@ -79,14 +79,16 @@ class Stage0Probe {
       try {
         await migratedDatabase.customSelect('SELECT 1').get();
         await _assertRawPreserved(migratedDatabase, rawHash);
+        await _assertRawMediaSchema(migratedDatabase);
         steps.add('drift_v2_migrated_raw_preserved');
+        steps.add('raw_media_schema_contract_verified_after_migration');
 
         await migratedDatabase
             .into(migratedDatabase.derivedArtifacts)
             .insert(
               DerivedArtifactsCompanion.insert(
-                id: _artifactId,
-                captureId: _captureId,
+                artifactId: _artifactId,
+                sourceCaptureId: _captureId,
                 artifactKind: 'prototype_metadata',
                 content: 'Derived probe artifact; not a user record.',
                 provenance: 'stage0_probe',
@@ -104,9 +106,11 @@ class Stage0Probe {
       try {
         await reopenedDatabase.customSelect('SELECT 1').get();
         await _assertRawPreserved(reopenedDatabase, rawHash);
-        artifact = await (reopenedDatabase.select(
-          reopenedDatabase.derivedArtifacts,
-        )..where((row) => row.id.equals(_artifactId))).getSingleOrNull();
+        await _assertRawMediaSchema(reopenedDatabase);
+        artifact =
+            await (reopenedDatabase.select(reopenedDatabase.derivedArtifacts)
+                  ..where((row) => row.artifactId.equals(_artifactId)))
+                .getSingleOrNull();
         final versionRows = await reopenedDatabase
             .customSelect('PRAGMA user_version')
             .get();
@@ -119,6 +123,7 @@ class Stage0Probe {
         throw StateError('reopen verification failed');
       }
       steps.add('reopened_raw_and_derived_verified');
+      steps.add('raw_media_schema_contract_verified_after_reopen');
       return Stage0ProbeResult(
         ok: true,
         databasePath: databaseFile.path,
@@ -155,12 +160,12 @@ class Stage0Probe {
       database.execute('PRAGMA foreign_keys = ON');
       database.execute('''
         CREATE TABLE raw_captures (
-          id TEXT NOT NULL PRIMARY KEY,
+          capture_id TEXT NOT NULL PRIMARY KEY,
           raw_text TEXT NOT NULL,
-          source_device_id TEXT NOT NULL,
+          source_installation_id TEXT NOT NULL,
           captured_at_utc_micros INTEGER NOT NULL,
           original_offset_minutes INTEGER NOT NULL,
-          source_time_zone TEXT,
+          source_time_zone_id TEXT,
           visibility TEXT NOT NULL,
           revision INTEGER NOT NULL,
           created_at_utc_micros INTEGER NOT NULL
@@ -168,20 +173,21 @@ class Stage0Probe {
       ''');
       database.execute('''
         CREATE TABLE raw_media_references (
-          id TEXT NOT NULL PRIMARY KEY,
-          capture_id TEXT NOT NULL REFERENCES raw_captures(id),
+          media_id TEXT NOT NULL PRIMARY KEY,
+          capture_id TEXT NOT NULL REFERENCES raw_captures(capture_id),
           relative_path TEXT NOT NULL,
           sha256 TEXT NOT NULL,
           byte_length INTEGER NOT NULL,
-          mime_type TEXT NOT NULL,
+          mime_type TEXT,
           codec TEXT,
+          duration_millis INTEGER,
           created_at_utc_micros INTEGER NOT NULL
         )
       ''');
       final statement = database.prepare('''
         INSERT INTO raw_captures (
-          id, raw_text, source_device_id, captured_at_utc_micros,
-          original_offset_minutes, source_time_zone, visibility, revision,
+          capture_id, raw_text, source_installation_id, captured_at_utc_micros,
+          original_offset_minutes, source_time_zone_id, visibility, revision,
           created_at_utc_micros
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       ''');
@@ -189,7 +195,7 @@ class Stage0Probe {
         statement.execute([
           _captureId,
           _prototypeRawText,
-          _sourceDeviceId,
+          _sourceInstallationId,
           _capturedAtUtcMicros,
           _offsetMinutes,
           _timeZone,
@@ -212,18 +218,59 @@ class Stage0Probe {
   ) async {
     final raw = await (database.select(
       database.rawCaptures,
-    )..where((row) => row.id.equals(_captureId))).getSingle();
+    )..where((row) => row.captureId.equals(_captureId))).getSingle();
     final restoredHash = sha256.convert(utf8.encode(raw.rawText)).toString();
     if (raw.rawText != _prototypeRawText ||
         restoredHash != rawHash ||
-        raw.sourceDeviceId != _sourceDeviceId ||
+        raw.sourceInstallationId != _sourceInstallationId ||
         raw.capturedAtUtcMicros != _capturedAtUtcMicros ||
         raw.originalOffsetMinutes != _offsetMinutes ||
-        raw.sourceTimeZone != _timeZone ||
+        raw.sourceTimeZoneId != _timeZone ||
         raw.visibility != 'private' ||
         raw.revision != 1 ||
         raw.createdAtUtcMicros != _createdAtUtcMicros) {
       throw StateError('raw capture changed during migration');
+    }
+  }
+
+  Future<void> _assertRawMediaSchema(Stage0Database database) async {
+    final columns = await database
+        .customSelect('PRAGMA table_info(raw_media_references)')
+        .get();
+    final expectedColumns = <String, ({bool nullable, int primaryKey})>{
+      'media_id': (nullable: false, primaryKey: 1),
+      'capture_id': (nullable: false, primaryKey: 0),
+      'relative_path': (nullable: false, primaryKey: 0),
+      'sha256': (nullable: false, primaryKey: 0),
+      'byte_length': (nullable: false, primaryKey: 0),
+      'mime_type': (nullable: true, primaryKey: 0),
+      'codec': (nullable: true, primaryKey: 0),
+      'duration_millis': (nullable: true, primaryKey: 0),
+      'created_at_utc_micros': (nullable: false, primaryKey: 0),
+    };
+    if (columns.length != expectedColumns.length) {
+      throw StateError('raw media schema column count changed');
+    }
+    for (final column in columns) {
+      final name = column.read<String>('name');
+      final expected = expectedColumns[name];
+      if (expected == null ||
+          (column.read<int>('notnull') == 0) != expected.nullable ||
+          column.read<int>('pk') != expected.primaryKey) {
+        throw StateError('raw media schema contract changed');
+      }
+    }
+    final foreignKeys = await database
+        .customSelect('PRAGMA foreign_key_list(raw_media_references)')
+        .get();
+    final captureForeignKey = foreignKeys.where(
+      (foreignKey) =>
+          foreignKey.read<String>('from') == 'capture_id' &&
+          foreignKey.read<String>('table') == 'raw_captures' &&
+          foreignKey.read<String>('to') == 'capture_id',
+    );
+    if (captureForeignKey.length != 1) {
+      throw StateError('raw media capture foreign key changed');
     }
   }
 }

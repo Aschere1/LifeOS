@@ -1,5 +1,9 @@
 [CmdletBinding()]
-param()
+param(
+  [switch]$SkipAndroid,
+  [ValidateRange(1, 300)]
+  [int]$ProbeTimeoutSeconds = 30
+)
 
 $ErrorActionPreference = 'Stop'
 $workspaceRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -17,16 +21,32 @@ if (Test-Path -LiteralPath $expectedProbeDirectory) {
 New-Item -ItemType Directory -Force -Path $expectedProbeDirectory | Out-Null
 
 $flutter = 'D:\Archer\LifeOS-stage0-tools\flutter\bin\flutter.bat'
-if (-not (Test-Path -LiteralPath $flutter)) {
-  throw "Pinned Flutter executable not found: $flutter"
-}
+$javaHome = 'D:\Archer\LifeOS-stage0-tools\jdk\jdk-21.0.12.1+1'
+$androidSdk = 'D:\Archer\LifeOS-stage0-tools\android-sdk'
 $pubCache = 'D:\Archer\LifeOS-stage0-tools\pub-cache'
+$gradleUserHome = 'D:\Archer\LifeOS-stage0-tools\gradle-cache'
+
+foreach ($requiredPath in @($flutter, $javaHome, $androidSdk, $gradleUserHome)) {
+  if (-not (Test-Path -LiteralPath $requiredPath)) {
+    throw "Pinned Stage 0 tool path not found: $requiredPath"
+  }
+}
 if (-not (Test-Path -LiteralPath $pubCache)) {
   New-Item -ItemType Directory -Force -Path $pubCache | Out-Null
 }
+
+$env:JAVA_HOME = $javaHome
+$env:ANDROID_HOME = $androidSdk
+$env:ANDROID_SDK_ROOT = $androidSdk
 $env:PUB_CACHE = $pubCache
-if ($env:PUB_CACHE -ne $pubCache) {
-  throw 'Unable to set the pinned D: PUB_CACHE path.'
+$env:GRADLE_USER_HOME = $gradleUserHome
+$env:PATH = "$javaHome\bin;$androidSdk\platform-tools;$env:PATH"
+if ($env:JAVA_HOME -ne $javaHome -or
+    $env:ANDROID_HOME -ne $androidSdk -or
+    $env:ANDROID_SDK_ROOT -ne $androidSdk -or
+    $env:PUB_CACHE -ne $pubCache -or
+    $env:GRADLE_USER_HOME -ne $gradleUserHome) {
+  throw 'Unable to set the pinned D: Stage 0 environment paths.'
 }
 
 Push-Location $workspaceRoot
@@ -55,20 +75,70 @@ try {
   $processInfo.Environment['LIFEOS_STAGE0_DATA_DIR'] = $env:LIFEOS_STAGE0_DATA_DIR
   $process = [System.Diagnostics.Process]::new()
   $process.StartInfo = $processInfo
-  if (-not $process.Start()) {
-    throw "Failed to start Stage 0 executable: $executable"
+  $runtimeStdout = ''
+  $runtimeStderr = ''
+  $probeExitCode = $null
+  $timedOut = $false
+  $processError = $null
+  $started = $false
+  $stdoutTask = $null
+  $stderrTask = $null
+  try {
+    if (-not $process.Start()) {
+      throw "Failed to start Stage 0 executable: $executable"
+    }
+    $started = $true
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+    if (-not $process.WaitForExit($ProbeTimeoutSeconds * 1000)) {
+      $timedOut = $true
+      $process.Kill($true)
+      $process.WaitForExit(5000) | Out-Null
+    }
+    if ($process.HasExited) {
+      $probeExitCode = $process.ExitCode
+    }
+  } catch {
+    $processError = $_.Exception.Message
+  } finally {
+    if ($started -and -not $process.HasExited) {
+      try {
+        $process.Kill($true)
+        $process.WaitForExit(5000) | Out-Null
+      } catch {
+        if (-not $processError) {
+          $processError = "Owned probe process cleanup failed: $($_.Exception.Message)"
+        }
+      }
+    }
+    if ($started -and $process.HasExited) {
+      $probeExitCode = $process.ExitCode
+    }
+    if ($null -ne $stdoutTask -and $stdoutTask.Wait(5000)) {
+      $runtimeStdout = $stdoutTask.GetAwaiter().GetResult()
+    }
+    if ($null -ne $stderrTask -and $stderrTask.Wait(5000)) {
+      $runtimeStderr = $stderrTask.GetAwaiter().GetResult()
+    }
+    $process.Dispose()
   }
-  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-  $stderrTask = $process.StandardError.ReadToEndAsync()
-  $process.WaitForExit()
-  $probeExitCode = $process.ExitCode
-  $runtimeStdout = $stdoutTask.GetAwaiter().GetResult()
-  $runtimeStderr = $stderrTask.GetAwaiter().GetResult()
+  if ($timedOut) {
+    $runtimeStderr += "`nSCRIPT_TIMEOUT: probe exceeded $ProbeTimeoutSeconds seconds; the owned process tree was terminated.`n"
+  }
+  if ($processError) {
+    $runtimeStderr += "`nSCRIPT_PROCESS_ERROR: $processError`n"
+  }
   [System.IO.File]::WriteAllText(
     $runtimeLog,
     $runtimeStderr + $runtimeStdout,
     [System.Text.UTF8Encoding]::new($false)
   )
+  if ($processError) {
+    throw "Stage 0 Windows headless probe process error: $processError"
+  }
+  if ($timedOut) {
+    throw "Stage 0 Windows headless probe exceeded $ProbeTimeoutSeconds seconds."
+  }
 
   $jsonCandidates = @(
     $runtimeStdout -split "`r?`n" |
@@ -95,6 +165,11 @@ try {
     throw "Stage 0 Windows headless probe reported status '$($probe.status)'."
   }
   Write-Output $jsonCandidates[0]
+
+  if (-not $SkipAndroid) {
+    & $flutter build apk --debug
+    if ($LASTEXITCODE -ne 0) { throw 'flutter build apk --debug failed.' }
+  }
 } finally {
   Pop-Location
 }
