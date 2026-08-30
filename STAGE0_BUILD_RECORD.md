@@ -29,9 +29,15 @@
   builds Android; `-SkipAndroid` is only for the second Windows repeat.
   The owned Windows probe process has a 30-second timeout and controlled
   process-tree cleanup.
-- Windows release builds in the latest evidence runs: PASS in 9.5s and 9.2s
-  (`-SkipAndroid` normal/recovery paths). Full release runner directory:
-  27,848,756 bytes.
+- Before any build, the fixed Flutter executable's `--version --machine` JSON
+  check passed exactly: framework/flutter `3.47.2`, Dart `3.13.2`, stable
+  channel, official repository URL, framework revision
+  `d3b14c876900e553bc736ca19295fc09e3853e8e`, and engine revision
+  `a804b261645ef8c13eb3d5c44a5c2fb0340c5539`.
+- The default dual-target batch built Windows in 25.0s before its Android debug
+  build. The later 9.5s and 9.2s Windows builds are `-SkipAndroid` cleanup
+  normal/recovery checks, not replacement Android evidence. Full release runner
+  directory: 27,848,756 bytes.
 - Windows headless probe, normal success: PASS. Evidence JSON:
   `build/stage0-logs/windows-probe-20260830-134645.json` (750 bytes), parsed
   with `ConvertFrom-Json`; sibling full runtime log: `.log` (885 bytes).
@@ -41,17 +47,19 @@
 - Windows headless probe, post-timeout recovery: PASS. Evidence JSON:
   `build/stage0-logs/windows-probe-20260830-134731.json` (750 bytes), parsed
   with `ConvertFrom-Json`; sibling full runtime log: `.log` (885 bytes).
+- Version-check/cleanup revalidation (Windows only; it does not replace the
+  earlier default dual-target evidence): normal `-SkipAndroid` PASS in 9.1s,
+  `windows-probe-20260830-135853.json`; 1-second timeout expected failure,
+  `windows-probe-20260830-135913.log`, with zero owned processes afterward;
+  recovery `-SkipAndroid` PASS in 9.1s,
+  `windows-probe-20260830-135939.json`. Both JSON files are 750-byte,
+  `ConvertFrom-Json`-parseable PASS evidence.
   Both JSON files have `status=PASS`, `raw_value_preserved=true`,
   `derived_artifact_present=true`, `PRAGMA user_version=2`, and matching
   expected/verified raw SHA-256
   `d78109f2d5f16089394dc648135e765838f856a6435683894c50442aee06c8cf`.
   The script validates one JSON object, JSON parsing, exit code, and PASS status;
   it cleans only the explicit `build/stage0-probe-data` directory between runs.
-- Lead fault-injection check: `-ProbeTimeoutSeconds 1 -SkipAndroid` returned
-  failure after the bounded timeout, wrote `windows-probe-20260830-090320.log`
-  with `SCRIPT_TIMEOUT`, and left zero owned probe processes running. The next
-  normal `-SkipAndroid` invocation cleaned the fixed probe directory and passed
-  (`windows-probe-20260830-090353.json`), proving recovery after interruption.
 - The fixture aligns its candidate first-write names with `capture_id`,
   `source_installation_id`, and `source_time_zone_id`; it uses a fixed synthetic
   UUIDv4 installation source. `raw_media_references` remains empty but is
@@ -87,11 +95,15 @@
   pure JSON evidence file.
 - No insecure HTTP, third-party mirror, or dependency downgrade was used.
 
-Local verification used Flutter's official platform-support documentation for
-Windows and Android. Drift and sqlite3 are MIT-licensed dependencies. Their
-SQLite migration boundary is proven here; the community `record` package and
-real microphone/audio behavior remain a Stage 1 device gate, not a Stage 0
-acceptance claim.
+Maintenance evidence checked 2026-08-30: Flutter's official platform-support
+documentation covers Windows and Android; the official
+[Drift package page](https://pub.dev/packages/drift/versions/2.34.3),
+[Drift repository](https://github.com/simolus3/drift),
+[sqlite3 package page](https://pub.dev/packages/sqlite3/versions/3.5.2), and
+[sqlite3 repository](https://github.com/simolus3/sqlite3.dart) remained active,
+and both packages are MIT-licensed. The SQLite migration boundary is proven here;
+community `record` 7.1.1 remains a Stage 1 device-validation risk for real
+microphone/audio behavior, not a Stage 0 acceptance claim.
 
 This is evidence for the Stage 0 technical question only. It is not a claim
 that Stage 1 or V0.1 product acceptance is complete.

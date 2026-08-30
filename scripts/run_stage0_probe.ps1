@@ -35,6 +35,30 @@ if (-not (Test-Path -LiteralPath $pubCache)) {
   New-Item -ItemType Directory -Force -Path $pubCache | Out-Null
 }
 
+$expectedFlutterVersion = @{
+  frameworkVersion = '3.47.2'
+  flutterVersion = '3.47.2'
+  dartSdkVersion = '3.13.2'
+  channel = 'stable'
+  repositoryUrl = 'https://github.com/flutter/flutter.git'
+  frameworkRevision = 'd3b14c876900e553bc736ca19295fc09e3853e8e'
+  engineRevision = 'a804b261645ef8c13eb3d5c44a5c2fb0340c5539'
+}
+try {
+  $flutterMachineVersion = (& $flutter --version --machine) -join "`n"
+  if ($LASTEXITCODE -ne 0) {
+    throw "flutter --version --machine exited with code $LASTEXITCODE"
+  }
+  $flutterInfo = $flutterMachineVersion | ConvertFrom-Json -ErrorAction Stop
+} catch {
+  throw "Pinned Flutter machine-version check failed: $($_.Exception.Message)"
+}
+foreach ($property in $expectedFlutterVersion.Keys) {
+  if ($flutterInfo.$property -cne $expectedFlutterVersion[$property]) {
+    throw "Pinned Flutter machine-version mismatch for ${property}: expected '$($expectedFlutterVersion[$property])', got '$($flutterInfo.$property)'."
+  }
+}
+
 $env:JAVA_HOME = $javaHome
 $env:ANDROID_HOME = $androidSdk
 $env:ANDROID_SDK_ROOT = $androidSdk
@@ -93,7 +117,9 @@ try {
     if (-not $process.WaitForExit($ProbeTimeoutSeconds * 1000)) {
       $timedOut = $true
       $process.Kill($true)
-      $process.WaitForExit(5000) | Out-Null
+      if (-not $process.WaitForExit(5000)) {
+        $processError = 'Owned probe process did not exit within 5 seconds after timeout termination'
+      }
     }
     if ($process.HasExited) {
       $probeExitCode = $process.ExitCode
@@ -105,7 +131,10 @@ try {
       if ($started -and -not $process.HasExited) {
         try {
           $process.Kill($true)
-          $process.WaitForExit(5000) | Out-Null
+          if (-not $process.WaitForExit(5000)) {
+            $cleanupError = 'Owned probe process did not exit within 5 seconds during cleanup'
+            $processError = if ($processError) { "$processError; $cleanupError" } else { $cleanupError }
+          }
         } catch {
           $cleanupError = "Owned probe process cleanup failed: $($_.Exception.Message)"
           $processError = if ($processError) { "$processError; $cleanupError" } else { $cleanupError }
