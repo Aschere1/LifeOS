@@ -10,7 +10,7 @@
 
 本批实现形成了第一条可运行的本地价值切片：用户可从 Now 打开随手记，不预先选择内部类型，按原样保存非空文字；内容以默认 `private` 的 Raw Capture 写入本机 SQLite，并在 Today Timeline 以“原始 · 未整理”状态显示，点击后可回看完整原文。
 
-本证据不声称 Stage 1 或 V0.1 已完成。原始语音、Raw Media、删除、真实 schema v2 迁移、Android 实机重启、Session、Task、Daily Review、AI、同步、导出和备份均不在本批实现范围。
+本证据不声称 Stage 1 或 V0.1 已完成。原始语音、Raw Media、删除、真实 schema v2 迁移、Android 设备重启、Session、Task、Daily Review、AI、同步、导出和备份均不在本批实现范围。Android 文字路径已完成真实设备上的进程终止与重启验收，但没有把它扩大解释为设备重启或语音路径通过。
 
 ## 2. 产品与验收依据
 
@@ -26,9 +26,9 @@ Stage 1 executable acceptance 的状态必须进一步区分：
 
 | Stage 1 ID | 本批状态 | 说明 |
 |---|---|---|
-| `S1-AC-01` | PARTIAL | Windows 与 Android 均已从同一源码构建；Windows 已实际启动到 Now/Capture，Android 真实设备启动仍待验证 |
+| `S1-AC-01` | PASS | Windows 与 Android 均从同一受控源码构建，并分别实际启动到 Now/Capture 入口；Android 证据来自 PKG110 / Android 16（API 36）真实设备 |
 | `S1-AC-02` | PASS（文字切片） | 不选内部类型即可保存非空文字，首次写入默认 Private，repository 不依赖网络 |
-| `S1-AC-05` | PASS（Windows 文字路径）/ PARTIAL（Stage 1 整体） | Windows 已完成正式版 UI 写入、进程关闭、重启、Timeline 与详情回看；Android 真机与原始语音路径仍待验证 |
+| `S1-AC-05` | PASS（Windows、Android 文字路径）/ PARTIAL（Stage 1 整体） | 两端文字路径均已完成 UI 写入、进程关闭、重启、Timeline 与详情回看；原始语音路径仍待实现与验证 |
 | `S1-AC-06` | PASS（当前文字边界） | production schema 不存在派生字段或派生表，Raw Capture 没有被修改派生内容的入口；未来新增派生能力仍需独立验收 |
 | `S1-AC-07` | PASS（文字切片） | Today Timeline 按发生时间显示本地 Raw Capture，并标注“原始 · 未整理” |
 | `S1-AC-09` | PASS（已实现文字切片） | 当前实现不包含网络、AI 或同步依赖；未实现的语音/删除部分不在此声明内 |
@@ -66,20 +66,23 @@ Stage 1 executable acceptance 的状态必须进一步区分：
 
 ## 4. 自动化验证
 
-在 Flutter 3.47.2 / Dart 3.13.2、Windows 11、Android SDK API 36 环境执行：
+在 Flutter 3.47.2 / Dart 3.13.2、Windows 11、Android SDK API 36 及 PKG110 / Android 16（API 36）真实设备环境执行：
 
 | 验证 | 结果 | 证据摘要 |
 |---|---|---|
-| `dart format --output=none --set-exit-if-changed lib test` | PASS | 10 files，0 changed |
+| `dart format --output=none --set-exit-if-changed lib test integration_test` | PASS | 11 files，0 changed |
 | `flutter analyze` | PASS | No issues found |
 | `flutter test` | PASS | 13 tests passed |
 | `flutter test integration_test/text_capture_restart_test.dart -d windows` | PASS | 1 Windows integration test passed |
+| `flutter test integration_test/text_capture_restart_test.dart -d <android-device-id>` | PASS | 1 Android physical-device integration test passed；设备序列号不进入仓库 |
 | `dart run build_runner build --only-check` | PASS | 生成检查通过；tracked generated source 与 schema 无变化 |
 | Drift schema dump | PASS | `drift_schema_v1.json` 已生成并含复合索引 |
 
 13 项测试覆盖：原文精确保留、时间/offset/time-zone/隐私/revision、空 payload、UUID 版本与稳定 installation、时间区间排序、首次事务回滚与重试、文件关闭重开、PRAGMA、外键失败无半条记录、无类型选择、保存与详情回看、写失败保留输入、读失败不冒充空状态、跨本地午夜切换 Today 区间。
 
 Windows integration test 使用真实 file-backed Drift store 和界面操作保存包含换行、首尾空格的原文；随后卸载应用 widget、关闭 store、从同一数据库重建 store 与应用，验证 Timeline 和详情页精确保留原文。该测试使用实时 integration binding，避免普通 widget test 的受控时间与后台数据库 Future 互相等待。
+
+同一 integration test 在 Android 16 真实设备上再次通过，覆盖真实 Android Flutter、native SQLite、文件系统与 UI 组合下的原文精确保留和数据库关闭重开。该自动化测试使用隔离临时数据库；正式应用目录另由下节的真实进程重启 E2E 覆盖。
 
 ## 5. 平台构建与启动证据
 
@@ -89,7 +92,7 @@ Windows integration test 使用真实 file-backed Drift store 和界面操作保
 | Android debug APK | `flutter build apk --debug` | PASS；`build/app/outputs/flutter-apk/app-debug.apk` |
 
 - Windows EXE SHA-256：`FACFBC2502C35DA6078355F38C7AA235D899236C07308F305AFAA210F0A0E580`；
-- Android APK SHA-256：`D0E7B8D396A638738BF9A6BBFA4E8718325AEF665B6EC5A7C7C2422689320C93`；
+- Android APK SHA-256：`164C85EA03B9987F570687053829E8498932A46C80E1030AEFBD5B9BD4B0E03B`；
 - APK application ID：`com.aschere.lifeos`；min SDK 24；compile/target SDK 36；
 - APK 包含 `arm64-v8a`、`armeabi-v7a`、`x86_64` 的 `libsqlite3.so`；
 - Windows release 实际启动到 Now，确认出现“默认私有 · 仅存本机”“今天的时间线”和“随手记”；打开随手记后确认只有原文输入与保存入口，没有类型选择；未写入测试 Capture，随后正常关闭；
@@ -97,15 +100,19 @@ Windows integration test 使用真实 file-backed Drift store 和界面操作保
 
 另以独立 `%LOCALAPPDATA%` 测试根运行 Windows release 成品，完成：界面保存测试原文 → 数据库核验 1 条 `private` / revision 1 记录且 `integrity_check = ok` → 正常关闭进程 → 使用同一测试根重启 → Today Timeline 恢复记录 → 打开“原始 · 未整理”详情并回看原文。测试进程关闭后，隔离数据目录已逐项核验并删除；正式数据目录未被写入。
 
-Android build 输出一条 SDK XML 工具版本提示，但 Gradle 最终成功，APK manifest 与 native library 已用 API 36 build-tools 重新检查。正式 Android 签名不存放在仓库内，release 不再回退到 debug key；发布签名与实机安装属于后续 release gate。
+Android 真实设备 PKG110 / Android 16（API 36）安装普通 debug APK 后，完成：启动到 Now/Capture → 保存明确标记的测试原文 → Today Timeline 显示“原始 · 未整理” → `am force-stop` 强制结束真实应用进程 → 从 launcher activity 重启 → Timeline 恢复记录 → 打开“原始随手记”详情并核对原文一致。LifeOS 在测试前未安装；验收完成后已卸载 `com.aschere.lifeos`，因此应用和本次测试数据库均已从设备清除，电脑端临时截图亦已删除。
+
+真机诊断期间曾把 `flutter test integration_test/...` 生成的测试入口 APK 当作普通 APK 安装，系统稳定报告 `firstWindowDrawn=false`。重新执行 `flutter build apk --debug --target lib/main.dart` 并安装后，同一启动检查转为 `first Flutter frame drawn`；进程日志无数据库异常。结论是测试产物选择错误，不是产品启动缺陷。后续人工 smoke test 必须在 integration test 之后显式重建普通入口 APK。
+
+Android build 输出一条 SDK XML 工具版本提示，但 Gradle、APK 安装与 API 36 真机运行均成功；该提示属于本地 Android command-line tools 与 SDK metadata 版本差异，保留为工具链维护项。APK manifest 与 native library 已用 API 36 build-tools 重新检查。正式 Android 签名不存放在仓库内，release 不再回退到 debug key；发布签名属于后续 release gate。
 
 ## 6. 当前限制与后续 Gate
 
-- 当前主机未连接 Android 设备，也未安装可用模拟器；需要 Android API 24 与最新受支持版本的真实设备执行启动、写入、进程终止、设备重启和回看；
+- Android 16 / API 36 真机文字路径已验证；API 24 下界设备、其他厂商设备与完整设备重启仍未覆盖，不将单机证据扩大为兼容性矩阵完成；
 - 原始语音及权限拒绝、取消、文件落盘、回放和删除证据仍未实现；
 - schema 首次真实升级时必须新增逐步 migration、旧数据完整性与失败回滚证据；
 - IANA time-zone discovery、数据库级加密、正式签名、安装/升级/卸载数据保留策略分别留在对应架构与 release gate；
-- 本批没有增加 AI、网络、同步、telemetry 或外部数据读取权限。
+- production/main manifest 未增加外部数据读取权限，应用代码不包含网络、AI、同步或 telemetry 行为；debug/profile manifest 保留 Flutter 调试工具所需的 `INTERNET` 权限，不将它误述为产品联网能力或 release 隐私声明。
 
 ## 7. 产品决策
 
@@ -115,5 +122,6 @@ Android build 输出一条 SDK XML 工具版本提示，但 Gradle 最终成功�
 
 - Standards Reviewer 首轮提出 Windows roaming data、Android backup、release debug signing、读取错误状态、跨午夜刷新和 Timeline 索引六项问题；修复后逐项复审为 `RESOLVED`，最终 `PASS`，无新增 P0/P1/P2 finding；
 - Verification Reviewer 独立复跑格式、静态检查、13 项测试、Drift 生成一致性、schema index、Android manifest/APK 与 Windows release 产物，全部 `PASS`，无残余阻塞；
-- Spec Reviewer 确认实现没有 Session、Task、AI、sync、media 或 Moment scope drift，也没有修改/覆盖 Raw Capture；同时指出 `S1-AC-01` 与 `S1-AC-05` 证据过早声明，本文件已改为上述 `PARTIAL` 状态；
-- Spec Reviewer 指出的“实现文件尚未进入受控源码”必须由本批 Git commit 关闭；在 commit 前不得把工作树状态当成可复现验收结果。
+- Spec Reviewer 确认实现没有 Session、Task、AI、sync、media 或 Moment scope drift，也没有修改/覆盖 Raw Capture；先前指出的 `S1-AC-01` 与 `S1-AC-05` Android 证据缺口，现已由 API 36 真实设备启动与文字进程重启 E2E 补齐；Stage 1 整体仍因原始语音等范围保持 `PARTIAL`；
+- Spec Reviewer 先前指出的“实现文件尚未进入受控源码”已由 `100c3cf`（功能实现）与 `52d02a7`（Windows 重启回归测试）关闭；本次 Android 真机证据已完成独立复审，将作为单独 commit 提交。
+- 本次 Android 证据复审无 P0/P1 finding；唯一 P2 是“没有网络权限”的表述过宽，已按 main/release 产品边界与 debug/profile Flutter 调试权限的差异修正。Reviewer 复核 `S1-AC-01 = PASS`、`S1-AC-05 = 两端文字路径 PASS / Stage 1 整体 PARTIAL`，并确认进程重启与设备重启的边界没有混淆。
