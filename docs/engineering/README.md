@@ -8,6 +8,7 @@
 2. [Stage 0 Architecture Spike Plan](./Stage0_Architecture_Spike_Plan.md)：技术问题、候选方案、keep/kill gate 与原型边界；
 3. [Stage 0 Spike Results](./Stage0_Spike_Results.md)：双目标 build、migration/reopen、异常恢复、失败历史与限制；
 4. [Stage 1 First-Write Invariants](./Stage1_First_Write_Invariants.md)：Raw/Derived、identity/time、privacy、media write/delete 与 migration contract。
+5. [Stage 1 Text Capture Evidence](./Stage1_Text_Capture_Evidence.md)：首批文字 Capture 纵向切片的实现、测试、双平台构建与范围验收证据。
 
 ## Architecture decisions
 

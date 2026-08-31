@@ -1,0 +1,26 @@
+name: lifeos
+description: "LifeOS local-first raw text capture."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.2
+
+dependencies:
+  drift: 2.34.3
+  flutter:
+    sdk: flutter
+  path: 1.9.1
+  path_provider: 2.1.6
+  sqlite3: 3.5.2
+  uuid: 4.6.0
+
+dev_dependencies:
+  build_runner: 2.16.0
+  drift_dev: 2.34.5
+  flutter_lints: 6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
