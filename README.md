@@ -27,9 +27,10 @@ $env:ANDROID_SDK_ROOT=$env:ANDROID_HOME
 ```powershell
 $flutter='D:\Archer\LifeOS-stage0-tools\flutter\bin\flutter.bat'
 $dart='D:\Archer\LifeOS-stage0-tools\flutter\bin\dart.bat'
-& $dart format lib test
+& $dart format lib test integration_test
 & $flutter analyze
 & $flutter test
+& $flutter test integration_test/text_capture_restart_test.dart -d windows
 & $dart run build_runner build
 & $dart run build_runner build --only-check
 & $dart run drift_dev schema dump lib/src/persistence/capture_database.dart drift_schemas/
