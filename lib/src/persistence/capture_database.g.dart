@@ -248,6 +248,18 @@ class $RawCaptureRowsTable extends RawCaptureRows
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _payloadKindMeta = const VerificationMeta(
+    'payloadKind',
+  );
+  @override
+  late final GeneratedColumn<String> payloadKind = GeneratedColumn<String>(
+    'payload_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('text'),
+  );
   static const VerificationMeta _sourceInstallationIdMeta =
       const VerificationMeta('sourceInstallationId');
   @override
@@ -329,6 +341,7 @@ class $RawCaptureRowsTable extends RawCaptureRows
   List<GeneratedColumn> get $columns => [
     captureId,
     rawText,
+    payloadKind,
     sourceInstallationId,
     capturedAtUtcMicros,
     originalOffsetMinutes,
@@ -364,6 +377,15 @@ class $RawCaptureRowsTable extends RawCaptureRows
       );
     } else if (isInserting) {
       context.missing(_rawTextMeta);
+    }
+    if (data.containsKey('payload_kind')) {
+      context.handle(
+        _payloadKindMeta,
+        payloadKind.isAcceptableOrUnknown(
+          data['payload_kind']!,
+          _payloadKindMeta,
+        ),
+      );
     }
     if (data.containsKey('source_installation_id')) {
       context.handle(
@@ -451,6 +473,10 @@ class $RawCaptureRowsTable extends RawCaptureRows
         DriftSqlType.string,
         data['${effectivePrefix}raw_text'],
       )!,
+      payloadKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_kind'],
+      )!,
       sourceInstallationId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}source_installation_id'],
@@ -491,6 +517,7 @@ class $RawCaptureRowsTable extends RawCaptureRows
 class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
   final String captureId;
   final String rawText;
+  final String payloadKind;
   final String sourceInstallationId;
   final int capturedAtUtcMicros;
   final int originalOffsetMinutes;
@@ -501,6 +528,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
   const RawCaptureRow({
     required this.captureId,
     required this.rawText,
+    required this.payloadKind,
     required this.sourceInstallationId,
     required this.capturedAtUtcMicros,
     required this.originalOffsetMinutes,
@@ -514,6 +542,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
     final map = <String, Expression>{};
     map['capture_id'] = Variable<String>(captureId);
     map['raw_text'] = Variable<String>(rawText);
+    map['payload_kind'] = Variable<String>(payloadKind);
     map['source_installation_id'] = Variable<String>(sourceInstallationId);
     map['captured_at_utc_micros'] = Variable<int>(capturedAtUtcMicros);
     map['original_offset_minutes'] = Variable<int>(originalOffsetMinutes);
@@ -530,6 +559,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
     return RawCaptureRowsCompanion(
       captureId: Value(captureId),
       rawText: Value(rawText),
+      payloadKind: Value(payloadKind),
       sourceInstallationId: Value(sourceInstallationId),
       capturedAtUtcMicros: Value(capturedAtUtcMicros),
       originalOffsetMinutes: Value(originalOffsetMinutes),
@@ -550,6 +580,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
     return RawCaptureRow(
       captureId: serializer.fromJson<String>(json['captureId']),
       rawText: serializer.fromJson<String>(json['rawText']),
+      payloadKind: serializer.fromJson<String>(json['payloadKind']),
       sourceInstallationId: serializer.fromJson<String>(
         json['sourceInstallationId'],
       ),
@@ -571,6 +602,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
     return <String, dynamic>{
       'captureId': serializer.toJson<String>(captureId),
       'rawText': serializer.toJson<String>(rawText),
+      'payloadKind': serializer.toJson<String>(payloadKind),
       'sourceInstallationId': serializer.toJson<String>(sourceInstallationId),
       'capturedAtUtcMicros': serializer.toJson<int>(capturedAtUtcMicros),
       'originalOffsetMinutes': serializer.toJson<int>(originalOffsetMinutes),
@@ -584,6 +616,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
   RawCaptureRow copyWith({
     String? captureId,
     String? rawText,
+    String? payloadKind,
     String? sourceInstallationId,
     int? capturedAtUtcMicros,
     int? originalOffsetMinutes,
@@ -594,6 +627,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
   }) => RawCaptureRow(
     captureId: captureId ?? this.captureId,
     rawText: rawText ?? this.rawText,
+    payloadKind: payloadKind ?? this.payloadKind,
     sourceInstallationId: sourceInstallationId ?? this.sourceInstallationId,
     capturedAtUtcMicros: capturedAtUtcMicros ?? this.capturedAtUtcMicros,
     originalOffsetMinutes: originalOffsetMinutes ?? this.originalOffsetMinutes,
@@ -608,6 +642,9 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
     return RawCaptureRow(
       captureId: data.captureId.present ? data.captureId.value : this.captureId,
       rawText: data.rawText.present ? data.rawText.value : this.rawText,
+      payloadKind: data.payloadKind.present
+          ? data.payloadKind.value
+          : this.payloadKind,
       sourceInstallationId: data.sourceInstallationId.present
           ? data.sourceInstallationId.value
           : this.sourceInstallationId,
@@ -635,6 +672,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
     return (StringBuffer('RawCaptureRow(')
           ..write('captureId: $captureId, ')
           ..write('rawText: $rawText, ')
+          ..write('payloadKind: $payloadKind, ')
           ..write('sourceInstallationId: $sourceInstallationId, ')
           ..write('capturedAtUtcMicros: $capturedAtUtcMicros, ')
           ..write('originalOffsetMinutes: $originalOffsetMinutes, ')
@@ -650,6 +688,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
   int get hashCode => Object.hash(
     captureId,
     rawText,
+    payloadKind,
     sourceInstallationId,
     capturedAtUtcMicros,
     originalOffsetMinutes,
@@ -664,6 +703,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
       (other is RawCaptureRow &&
           other.captureId == this.captureId &&
           other.rawText == this.rawText &&
+          other.payloadKind == this.payloadKind &&
           other.sourceInstallationId == this.sourceInstallationId &&
           other.capturedAtUtcMicros == this.capturedAtUtcMicros &&
           other.originalOffsetMinutes == this.originalOffsetMinutes &&
@@ -676,6 +716,7 @@ class RawCaptureRow extends DataClass implements Insertable<RawCaptureRow> {
 class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
   final Value<String> captureId;
   final Value<String> rawText;
+  final Value<String> payloadKind;
   final Value<String> sourceInstallationId;
   final Value<int> capturedAtUtcMicros;
   final Value<int> originalOffsetMinutes;
@@ -687,6 +728,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
   const RawCaptureRowsCompanion({
     this.captureId = const Value.absent(),
     this.rawText = const Value.absent(),
+    this.payloadKind = const Value.absent(),
     this.sourceInstallationId = const Value.absent(),
     this.capturedAtUtcMicros = const Value.absent(),
     this.originalOffsetMinutes = const Value.absent(),
@@ -699,6 +741,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
   RawCaptureRowsCompanion.insert({
     required String captureId,
     required String rawText,
+    this.payloadKind = const Value.absent(),
     required String sourceInstallationId,
     required int capturedAtUtcMicros,
     required int originalOffsetMinutes,
@@ -718,6 +761,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
   static Insertable<RawCaptureRow> custom({
     Expression<String>? captureId,
     Expression<String>? rawText,
+    Expression<String>? payloadKind,
     Expression<String>? sourceInstallationId,
     Expression<int>? capturedAtUtcMicros,
     Expression<int>? originalOffsetMinutes,
@@ -730,6 +774,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
     return RawValuesInsertable({
       if (captureId != null) 'capture_id': captureId,
       if (rawText != null) 'raw_text': rawText,
+      if (payloadKind != null) 'payload_kind': payloadKind,
       if (sourceInstallationId != null)
         'source_installation_id': sourceInstallationId,
       if (capturedAtUtcMicros != null)
@@ -748,6 +793,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
   RawCaptureRowsCompanion copyWith({
     Value<String>? captureId,
     Value<String>? rawText,
+    Value<String>? payloadKind,
     Value<String>? sourceInstallationId,
     Value<int>? capturedAtUtcMicros,
     Value<int>? originalOffsetMinutes,
@@ -760,6 +806,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
     return RawCaptureRowsCompanion(
       captureId: captureId ?? this.captureId,
       rawText: rawText ?? this.rawText,
+      payloadKind: payloadKind ?? this.payloadKind,
       sourceInstallationId: sourceInstallationId ?? this.sourceInstallationId,
       capturedAtUtcMicros: capturedAtUtcMicros ?? this.capturedAtUtcMicros,
       originalOffsetMinutes:
@@ -780,6 +827,9 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
     }
     if (rawText.present) {
       map['raw_text'] = Variable<String>(rawText.value);
+    }
+    if (payloadKind.present) {
+      map['payload_kind'] = Variable<String>(payloadKind.value);
     }
     if (sourceInstallationId.present) {
       map['source_installation_id'] = Variable<String>(
@@ -817,6 +867,7 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
     return (StringBuffer('RawCaptureRowsCompanion(')
           ..write('captureId: $captureId, ')
           ..write('rawText: $rawText, ')
+          ..write('payloadKind: $payloadKind, ')
           ..write('sourceInstallationId: $sourceInstallationId, ')
           ..write('capturedAtUtcMicros: $capturedAtUtcMicros, ')
           ..write('originalOffsetMinutes: $originalOffsetMinutes, ')
@@ -830,11 +881,599 @@ class RawCaptureRowsCompanion extends UpdateCompanion<RawCaptureRow> {
   }
 }
 
+class $RawMediaRowsTable extends RawMediaRows
+    with TableInfo<$RawMediaRowsTable, RawMediaRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RawMediaRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _mediaIdMeta = const VerificationMeta(
+    'mediaId',
+  );
+  @override
+  late final GeneratedColumn<String> mediaId = GeneratedColumn<String>(
+    'media_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _captureIdMeta = const VerificationMeta(
+    'captureId',
+  );
+  @override
+  late final GeneratedColumn<String> captureId = GeneratedColumn<String>(
+    'capture_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'UNIQUE REFERENCES raw_captures (capture_id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _relativePathMeta = const VerificationMeta(
+    'relativePath',
+  );
+  @override
+  late final GeneratedColumn<String> relativePath = GeneratedColumn<String>(
+    'relative_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _sha256Meta = const VerificationMeta('sha256');
+  @override
+  late final GeneratedColumn<String> sha256 = GeneratedColumn<String>(
+    'sha256',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _byteLengthMeta = const VerificationMeta(
+    'byteLength',
+  );
+  @override
+  late final GeneratedColumn<int> byteLength = GeneratedColumn<int>(
+    'byte_length',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
+    'mimeType',
+  );
+  @override
+  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
+    'mime_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _codecMeta = const VerificationMeta('codec');
+  @override
+  late final GeneratedColumn<String> codec = GeneratedColumn<String>(
+    'codec',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMillisMeta = const VerificationMeta(
+    'durationMillis',
+  );
+  @override
+  late final GeneratedColumn<int> durationMillis = GeneratedColumn<int>(
+    'duration_millis',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtUtcMicrosMeta =
+      const VerificationMeta('createdAtUtcMicros');
+  @override
+  late final GeneratedColumn<int> createdAtUtcMicros = GeneratedColumn<int>(
+    'created_at_utc_micros',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    mediaId,
+    captureId,
+    relativePath,
+    sha256,
+    byteLength,
+    mimeType,
+    codec,
+    durationMillis,
+    createdAtUtcMicros,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'raw_media';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RawMediaRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('media_id')) {
+      context.handle(
+        _mediaIdMeta,
+        mediaId.isAcceptableOrUnknown(data['media_id']!, _mediaIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_mediaIdMeta);
+    }
+    if (data.containsKey('capture_id')) {
+      context.handle(
+        _captureIdMeta,
+        captureId.isAcceptableOrUnknown(data['capture_id']!, _captureIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_captureIdMeta);
+    }
+    if (data.containsKey('relative_path')) {
+      context.handle(
+        _relativePathMeta,
+        relativePath.isAcceptableOrUnknown(
+          data['relative_path']!,
+          _relativePathMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_relativePathMeta);
+    }
+    if (data.containsKey('sha256')) {
+      context.handle(
+        _sha256Meta,
+        sha256.isAcceptableOrUnknown(data['sha256']!, _sha256Meta),
+      );
+    } else if (isInserting) {
+      context.missing(_sha256Meta);
+    }
+    if (data.containsKey('byte_length')) {
+      context.handle(
+        _byteLengthMeta,
+        byteLength.isAcceptableOrUnknown(data['byte_length']!, _byteLengthMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_byteLengthMeta);
+    }
+    if (data.containsKey('mime_type')) {
+      context.handle(
+        _mimeTypeMeta,
+        mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta),
+      );
+    }
+    if (data.containsKey('codec')) {
+      context.handle(
+        _codecMeta,
+        codec.isAcceptableOrUnknown(data['codec']!, _codecMeta),
+      );
+    }
+    if (data.containsKey('duration_millis')) {
+      context.handle(
+        _durationMillisMeta,
+        durationMillis.isAcceptableOrUnknown(
+          data['duration_millis']!,
+          _durationMillisMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at_utc_micros')) {
+      context.handle(
+        _createdAtUtcMicrosMeta,
+        createdAtUtcMicros.isAcceptableOrUnknown(
+          data['created_at_utc_micros']!,
+          _createdAtUtcMicrosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMicrosMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {mediaId};
+  @override
+  RawMediaRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RawMediaRow(
+      mediaId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}media_id'],
+      )!,
+      captureId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}capture_id'],
+      )!,
+      relativePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relative_path'],
+      )!,
+      sha256: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sha256'],
+      )!,
+      byteLength: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}byte_length'],
+      )!,
+      mimeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mime_type'],
+      ),
+      codec: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}codec'],
+      ),
+      durationMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_millis'],
+      ),
+      createdAtUtcMicros: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc_micros'],
+      )!,
+    );
+  }
+
+  @override
+  $RawMediaRowsTable createAlias(String alias) {
+    return $RawMediaRowsTable(attachedDatabase, alias);
+  }
+}
+
+class RawMediaRow extends DataClass implements Insertable<RawMediaRow> {
+  final String mediaId;
+  final String captureId;
+  final String relativePath;
+  final String sha256;
+  final int byteLength;
+  final String? mimeType;
+  final String? codec;
+  final int? durationMillis;
+  final int createdAtUtcMicros;
+  const RawMediaRow({
+    required this.mediaId,
+    required this.captureId,
+    required this.relativePath,
+    required this.sha256,
+    required this.byteLength,
+    this.mimeType,
+    this.codec,
+    this.durationMillis,
+    required this.createdAtUtcMicros,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['media_id'] = Variable<String>(mediaId);
+    map['capture_id'] = Variable<String>(captureId);
+    map['relative_path'] = Variable<String>(relativePath);
+    map['sha256'] = Variable<String>(sha256);
+    map['byte_length'] = Variable<int>(byteLength);
+    if (!nullToAbsent || mimeType != null) {
+      map['mime_type'] = Variable<String>(mimeType);
+    }
+    if (!nullToAbsent || codec != null) {
+      map['codec'] = Variable<String>(codec);
+    }
+    if (!nullToAbsent || durationMillis != null) {
+      map['duration_millis'] = Variable<int>(durationMillis);
+    }
+    map['created_at_utc_micros'] = Variable<int>(createdAtUtcMicros);
+    return map;
+  }
+
+  RawMediaRowsCompanion toCompanion(bool nullToAbsent) {
+    return RawMediaRowsCompanion(
+      mediaId: Value(mediaId),
+      captureId: Value(captureId),
+      relativePath: Value(relativePath),
+      sha256: Value(sha256),
+      byteLength: Value(byteLength),
+      mimeType: mimeType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mimeType),
+      codec: codec == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codec),
+      durationMillis: durationMillis == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMillis),
+      createdAtUtcMicros: Value(createdAtUtcMicros),
+    );
+  }
+
+  factory RawMediaRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RawMediaRow(
+      mediaId: serializer.fromJson<String>(json['mediaId']),
+      captureId: serializer.fromJson<String>(json['captureId']),
+      relativePath: serializer.fromJson<String>(json['relativePath']),
+      sha256: serializer.fromJson<String>(json['sha256']),
+      byteLength: serializer.fromJson<int>(json['byteLength']),
+      mimeType: serializer.fromJson<String?>(json['mimeType']),
+      codec: serializer.fromJson<String?>(json['codec']),
+      durationMillis: serializer.fromJson<int?>(json['durationMillis']),
+      createdAtUtcMicros: serializer.fromJson<int>(json['createdAtUtcMicros']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'mediaId': serializer.toJson<String>(mediaId),
+      'captureId': serializer.toJson<String>(captureId),
+      'relativePath': serializer.toJson<String>(relativePath),
+      'sha256': serializer.toJson<String>(sha256),
+      'byteLength': serializer.toJson<int>(byteLength),
+      'mimeType': serializer.toJson<String?>(mimeType),
+      'codec': serializer.toJson<String?>(codec),
+      'durationMillis': serializer.toJson<int?>(durationMillis),
+      'createdAtUtcMicros': serializer.toJson<int>(createdAtUtcMicros),
+    };
+  }
+
+  RawMediaRow copyWith({
+    String? mediaId,
+    String? captureId,
+    String? relativePath,
+    String? sha256,
+    int? byteLength,
+    Value<String?> mimeType = const Value.absent(),
+    Value<String?> codec = const Value.absent(),
+    Value<int?> durationMillis = const Value.absent(),
+    int? createdAtUtcMicros,
+  }) => RawMediaRow(
+    mediaId: mediaId ?? this.mediaId,
+    captureId: captureId ?? this.captureId,
+    relativePath: relativePath ?? this.relativePath,
+    sha256: sha256 ?? this.sha256,
+    byteLength: byteLength ?? this.byteLength,
+    mimeType: mimeType.present ? mimeType.value : this.mimeType,
+    codec: codec.present ? codec.value : this.codec,
+    durationMillis: durationMillis.present
+        ? durationMillis.value
+        : this.durationMillis,
+    createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
+  );
+  RawMediaRow copyWithCompanion(RawMediaRowsCompanion data) {
+    return RawMediaRow(
+      mediaId: data.mediaId.present ? data.mediaId.value : this.mediaId,
+      captureId: data.captureId.present ? data.captureId.value : this.captureId,
+      relativePath: data.relativePath.present
+          ? data.relativePath.value
+          : this.relativePath,
+      sha256: data.sha256.present ? data.sha256.value : this.sha256,
+      byteLength: data.byteLength.present
+          ? data.byteLength.value
+          : this.byteLength,
+      mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
+      codec: data.codec.present ? data.codec.value : this.codec,
+      durationMillis: data.durationMillis.present
+          ? data.durationMillis.value
+          : this.durationMillis,
+      createdAtUtcMicros: data.createdAtUtcMicros.present
+          ? data.createdAtUtcMicros.value
+          : this.createdAtUtcMicros,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RawMediaRow(')
+          ..write('mediaId: $mediaId, ')
+          ..write('captureId: $captureId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('sha256: $sha256, ')
+          ..write('byteLength: $byteLength, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('codec: $codec, ')
+          ..write('durationMillis: $durationMillis, ')
+          ..write('createdAtUtcMicros: $createdAtUtcMicros')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    mediaId,
+    captureId,
+    relativePath,
+    sha256,
+    byteLength,
+    mimeType,
+    codec,
+    durationMillis,
+    createdAtUtcMicros,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RawMediaRow &&
+          other.mediaId == this.mediaId &&
+          other.captureId == this.captureId &&
+          other.relativePath == this.relativePath &&
+          other.sha256 == this.sha256 &&
+          other.byteLength == this.byteLength &&
+          other.mimeType == this.mimeType &&
+          other.codec == this.codec &&
+          other.durationMillis == this.durationMillis &&
+          other.createdAtUtcMicros == this.createdAtUtcMicros);
+}
+
+class RawMediaRowsCompanion extends UpdateCompanion<RawMediaRow> {
+  final Value<String> mediaId;
+  final Value<String> captureId;
+  final Value<String> relativePath;
+  final Value<String> sha256;
+  final Value<int> byteLength;
+  final Value<String?> mimeType;
+  final Value<String?> codec;
+  final Value<int?> durationMillis;
+  final Value<int> createdAtUtcMicros;
+  final Value<int> rowid;
+  const RawMediaRowsCompanion({
+    this.mediaId = const Value.absent(),
+    this.captureId = const Value.absent(),
+    this.relativePath = const Value.absent(),
+    this.sha256 = const Value.absent(),
+    this.byteLength = const Value.absent(),
+    this.mimeType = const Value.absent(),
+    this.codec = const Value.absent(),
+    this.durationMillis = const Value.absent(),
+    this.createdAtUtcMicros = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RawMediaRowsCompanion.insert({
+    required String mediaId,
+    required String captureId,
+    required String relativePath,
+    required String sha256,
+    required int byteLength,
+    this.mimeType = const Value.absent(),
+    this.codec = const Value.absent(),
+    this.durationMillis = const Value.absent(),
+    required int createdAtUtcMicros,
+    this.rowid = const Value.absent(),
+  }) : mediaId = Value(mediaId),
+       captureId = Value(captureId),
+       relativePath = Value(relativePath),
+       sha256 = Value(sha256),
+       byteLength = Value(byteLength),
+       createdAtUtcMicros = Value(createdAtUtcMicros);
+  static Insertable<RawMediaRow> custom({
+    Expression<String>? mediaId,
+    Expression<String>? captureId,
+    Expression<String>? relativePath,
+    Expression<String>? sha256,
+    Expression<int>? byteLength,
+    Expression<String>? mimeType,
+    Expression<String>? codec,
+    Expression<int>? durationMillis,
+    Expression<int>? createdAtUtcMicros,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (mediaId != null) 'media_id': mediaId,
+      if (captureId != null) 'capture_id': captureId,
+      if (relativePath != null) 'relative_path': relativePath,
+      if (sha256 != null) 'sha256': sha256,
+      if (byteLength != null) 'byte_length': byteLength,
+      if (mimeType != null) 'mime_type': mimeType,
+      if (codec != null) 'codec': codec,
+      if (durationMillis != null) 'duration_millis': durationMillis,
+      if (createdAtUtcMicros != null)
+        'created_at_utc_micros': createdAtUtcMicros,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RawMediaRowsCompanion copyWith({
+    Value<String>? mediaId,
+    Value<String>? captureId,
+    Value<String>? relativePath,
+    Value<String>? sha256,
+    Value<int>? byteLength,
+    Value<String?>? mimeType,
+    Value<String?>? codec,
+    Value<int?>? durationMillis,
+    Value<int>? createdAtUtcMicros,
+    Value<int>? rowid,
+  }) {
+    return RawMediaRowsCompanion(
+      mediaId: mediaId ?? this.mediaId,
+      captureId: captureId ?? this.captureId,
+      relativePath: relativePath ?? this.relativePath,
+      sha256: sha256 ?? this.sha256,
+      byteLength: byteLength ?? this.byteLength,
+      mimeType: mimeType ?? this.mimeType,
+      codec: codec ?? this.codec,
+      durationMillis: durationMillis ?? this.durationMillis,
+      createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (mediaId.present) {
+      map['media_id'] = Variable<String>(mediaId.value);
+    }
+    if (captureId.present) {
+      map['capture_id'] = Variable<String>(captureId.value);
+    }
+    if (relativePath.present) {
+      map['relative_path'] = Variable<String>(relativePath.value);
+    }
+    if (sha256.present) {
+      map['sha256'] = Variable<String>(sha256.value);
+    }
+    if (byteLength.present) {
+      map['byte_length'] = Variable<int>(byteLength.value);
+    }
+    if (mimeType.present) {
+      map['mime_type'] = Variable<String>(mimeType.value);
+    }
+    if (codec.present) {
+      map['codec'] = Variable<String>(codec.value);
+    }
+    if (durationMillis.present) {
+      map['duration_millis'] = Variable<int>(durationMillis.value);
+    }
+    if (createdAtUtcMicros.present) {
+      map['created_at_utc_micros'] = Variable<int>(createdAtUtcMicros.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RawMediaRowsCompanion(')
+          ..write('mediaId: $mediaId, ')
+          ..write('captureId: $captureId, ')
+          ..write('relativePath: $relativePath, ')
+          ..write('sha256: $sha256, ')
+          ..write('byteLength: $byteLength, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('codec: $codec, ')
+          ..write('durationMillis: $durationMillis, ')
+          ..write('createdAtUtcMicros: $createdAtUtcMicros, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CaptureDatabase extends GeneratedDatabase {
   _$CaptureDatabase(QueryExecutor e) : super(e);
   $CaptureDatabaseManager get managers => $CaptureDatabaseManager(this);
   late final $InstallationsTable installations = $InstallationsTable(this);
   late final $RawCaptureRowsTable rawCaptureRows = $RawCaptureRowsTable(this);
+  late final $RawMediaRowsTable rawMediaRows = $RawMediaRowsTable(this);
   late final Index rawCapturesOccurrenceIdx = Index(
     'raw_captures_occurrence_idx',
     'CREATE INDEX raw_captures_occurrence_idx ON raw_captures (captured_at_utc_micros, capture_id)',
@@ -846,8 +1485,19 @@ abstract class _$CaptureDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     installations,
     rawCaptureRows,
+    rawMediaRows,
     rawCapturesOccurrenceIdx,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'raw_captures',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('raw_media', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$InstallationsTableCreateCompanionBuilder =
@@ -1113,6 +1763,7 @@ typedef $$RawCaptureRowsTableCreateCompanionBuilder =
     RawCaptureRowsCompanion Function({
       required String captureId,
       required String rawText,
+      Value<String> payloadKind,
       required String sourceInstallationId,
       required int capturedAtUtcMicros,
       required int originalOffsetMinutes,
@@ -1126,6 +1777,7 @@ typedef $$RawCaptureRowsTableUpdateCompanionBuilder =
     RawCaptureRowsCompanion Function({
       Value<String> captureId,
       Value<String> rawText,
+      Value<String> payloadKind,
       Value<String> sourceInstallationId,
       Value<int> capturedAtUtcMicros,
       Value<int> originalOffsetMinutes,
@@ -1165,6 +1817,26 @@ final class $$RawCaptureRowsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<$RawMediaRowsTable, List<RawMediaRow>>
+  _rawMediaRowsRefsTable(_$CaptureDatabase db) => MultiTypedResultKey.fromTable(
+    db.rawMediaRows,
+    aliasName: 'raw_captures__capture_id__raw_media__capture_id',
+  );
+
+  $$RawMediaRowsTableProcessedTableManager get rawMediaRowsRefs {
+    final manager = $$RawMediaRowsTableTableManager($_db, $_db.rawMediaRows)
+        .filter(
+          (f) => f.captureId.captureId.sqlEquals(
+            $_itemColumn<String>('capture_id')!,
+          ),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_rawMediaRowsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$RawCaptureRowsTableFilterComposer
@@ -1183,6 +1855,11 @@ class $$RawCaptureRowsTableFilterComposer
 
   ColumnFilters<String> get rawText => $composableBuilder(
     column: $table.rawText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadKind => $composableBuilder(
+    column: $table.payloadKind,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1238,6 +1915,31 @@ class $$RawCaptureRowsTableFilterComposer
     );
     return composer;
   }
+
+  Expression<bool> rawMediaRowsRefs(
+    Expression<bool> Function($$RawMediaRowsTableFilterComposer f) f,
+  ) {
+    final $$RawMediaRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.captureId,
+      referencedTable: $db.rawMediaRows,
+      getReferencedColumn: (t) => t.captureId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RawMediaRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.rawMediaRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RawCaptureRowsTableOrderingComposer
@@ -1256,6 +1958,11 @@ class $$RawCaptureRowsTableOrderingComposer
 
   ColumnOrderings<String> get rawText => $composableBuilder(
     column: $table.rawText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadKind => $composableBuilder(
+    column: $table.payloadKind,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1328,6 +2035,11 @@ class $$RawCaptureRowsTableAnnotationComposer
   GeneratedColumn<String> get rawText =>
       $composableBuilder(column: $table.rawText, builder: (column) => column);
 
+  GeneratedColumn<String> get payloadKind => $composableBuilder(
+    column: $table.payloadKind,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get capturedAtUtcMicros => $composableBuilder(
     column: $table.capturedAtUtcMicros,
     builder: (column) => column,
@@ -1378,6 +2090,31 @@ class $$RawCaptureRowsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> rawMediaRowsRefs<T extends Object>(
+    Expression<T> Function($$RawMediaRowsTableAnnotationComposer a) f,
+  ) {
+    final $$RawMediaRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.captureId,
+      referencedTable: $db.rawMediaRows,
+      getReferencedColumn: (t) => t.captureId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RawMediaRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rawMediaRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RawCaptureRowsTableTableManager
@@ -1393,7 +2130,10 @@ class $$RawCaptureRowsTableTableManager
           $$RawCaptureRowsTableUpdateCompanionBuilder,
           (RawCaptureRow, $$RawCaptureRowsTableReferences),
           RawCaptureRow,
-          PrefetchHooks Function({bool sourceInstallationId})
+          PrefetchHooks Function({
+            bool sourceInstallationId,
+            bool rawMediaRowsRefs,
+          })
         > {
   $$RawCaptureRowsTableTableManager(
     _$CaptureDatabase db,
@@ -1412,6 +2152,7 @@ class $$RawCaptureRowsTableTableManager
               ({
                 Value<String> captureId = const Value.absent(),
                 Value<String> rawText = const Value.absent(),
+                Value<String> payloadKind = const Value.absent(),
                 Value<String> sourceInstallationId = const Value.absent(),
                 Value<int> capturedAtUtcMicros = const Value.absent(),
                 Value<int> originalOffsetMinutes = const Value.absent(),
@@ -1423,6 +2164,7 @@ class $$RawCaptureRowsTableTableManager
               }) => RawCaptureRowsCompanion(
                 captureId: captureId,
                 rawText: rawText,
+                payloadKind: payloadKind,
                 sourceInstallationId: sourceInstallationId,
                 capturedAtUtcMicros: capturedAtUtcMicros,
                 originalOffsetMinutes: originalOffsetMinutes,
@@ -1436,6 +2178,7 @@ class $$RawCaptureRowsTableTableManager
               ({
                 required String captureId,
                 required String rawText,
+                Value<String> payloadKind = const Value.absent(),
                 required String sourceInstallationId,
                 required int capturedAtUtcMicros,
                 required int originalOffsetMinutes,
@@ -1447,6 +2190,7 @@ class $$RawCaptureRowsTableTableManager
               }) => RawCaptureRowsCompanion.insert(
                 captureId: captureId,
                 rawText: rawText,
+                payloadKind: payloadKind,
                 sourceInstallationId: sourceInstallationId,
                 capturedAtUtcMicros: capturedAtUtcMicros,
                 originalOffsetMinutes: originalOffsetMinutes,
@@ -1464,7 +2208,434 @@ class $$RawCaptureRowsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({sourceInstallationId = false}) {
+          prefetchHooksCallback:
+              ({sourceInstallationId = false, rawMediaRowsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (rawMediaRowsRefs) db.rawMediaRows,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (sourceInstallationId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.sourceInstallationId,
+                            referencedTable: $$RawCaptureRowsTableReferences
+                                ._sourceInstallationIdTable(db),
+                            referencedColumn: $$RawCaptureRowsTableReferences
+                                ._sourceInstallationIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (rawMediaRowsRefs)
+                        await $_getPrefetchedData<
+                          RawCaptureRow,
+                          $RawCaptureRowsTable,
+                          RawMediaRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RawCaptureRowsTableReferences
+                              ._rawMediaRowsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RawCaptureRowsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).rawMediaRowsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.captureId == item.captureId,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RawCaptureRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$CaptureDatabase,
+      $RawCaptureRowsTable,
+      RawCaptureRow,
+      $$RawCaptureRowsTableFilterComposer,
+      $$RawCaptureRowsTableOrderingComposer,
+      $$RawCaptureRowsTableAnnotationComposer,
+      $$RawCaptureRowsTableCreateCompanionBuilder,
+      $$RawCaptureRowsTableUpdateCompanionBuilder,
+      (RawCaptureRow, $$RawCaptureRowsTableReferences),
+      RawCaptureRow,
+      PrefetchHooks Function({bool sourceInstallationId, bool rawMediaRowsRefs})
+    >;
+typedef $$RawMediaRowsTableCreateCompanionBuilder =
+    RawMediaRowsCompanion Function({
+      required String mediaId,
+      required String captureId,
+      required String relativePath,
+      required String sha256,
+      required int byteLength,
+      Value<String?> mimeType,
+      Value<String?> codec,
+      Value<int?> durationMillis,
+      required int createdAtUtcMicros,
+      Value<int> rowid,
+    });
+typedef $$RawMediaRowsTableUpdateCompanionBuilder =
+    RawMediaRowsCompanion Function({
+      Value<String> mediaId,
+      Value<String> captureId,
+      Value<String> relativePath,
+      Value<String> sha256,
+      Value<int> byteLength,
+      Value<String?> mimeType,
+      Value<String?> codec,
+      Value<int?> durationMillis,
+      Value<int> createdAtUtcMicros,
+      Value<int> rowid,
+    });
+
+final class $$RawMediaRowsTableReferences
+    extends BaseReferences<_$CaptureDatabase, $RawMediaRowsTable, RawMediaRow> {
+  $$RawMediaRowsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RawCaptureRowsTable _captureIdTable(_$CaptureDatabase db) => db
+      .rawCaptureRows
+      .createAlias('raw_media__capture_id__raw_captures__capture_id');
+
+  $$RawCaptureRowsTableProcessedTableManager get captureId {
+    final $_column = $_itemColumn<String>('capture_id')!;
+
+    final manager = $$RawCaptureRowsTableTableManager(
+      $_db,
+      $_db.rawCaptureRows,
+    ).filter((f) => f.captureId.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_captureIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RawMediaRowsTableFilterComposer
+    extends Composer<_$CaptureDatabase, $RawMediaRowsTable> {
+  $$RawMediaRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get mediaId => $composableBuilder(
+    column: $table.mediaId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sha256 => $composableBuilder(
+    column: $table.sha256,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get byteLength => $composableBuilder(
+    column: $table.byteLength,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get codec => $composableBuilder(
+    column: $table.codec,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMillis => $composableBuilder(
+    column: $table.durationMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtcMicros => $composableBuilder(
+    column: $table.createdAtUtcMicros,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RawCaptureRowsTableFilterComposer get captureId {
+    final $$RawCaptureRowsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.captureId,
+      referencedTable: $db.rawCaptureRows,
+      getReferencedColumn: (t) => t.captureId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RawCaptureRowsTableFilterComposer(
+            $db: $db,
+            $table: $db.rawCaptureRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RawMediaRowsTableOrderingComposer
+    extends Composer<_$CaptureDatabase, $RawMediaRowsTable> {
+  $$RawMediaRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get mediaId => $composableBuilder(
+    column: $table.mediaId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sha256 => $composableBuilder(
+    column: $table.sha256,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get byteLength => $composableBuilder(
+    column: $table.byteLength,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get codec => $composableBuilder(
+    column: $table.codec,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMillis => $composableBuilder(
+    column: $table.durationMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtcMicros => $composableBuilder(
+    column: $table.createdAtUtcMicros,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RawCaptureRowsTableOrderingComposer get captureId {
+    final $$RawCaptureRowsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.captureId,
+      referencedTable: $db.rawCaptureRows,
+      getReferencedColumn: (t) => t.captureId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RawCaptureRowsTableOrderingComposer(
+            $db: $db,
+            $table: $db.rawCaptureRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RawMediaRowsTableAnnotationComposer
+    extends Composer<_$CaptureDatabase, $RawMediaRowsTable> {
+  $$RawMediaRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get mediaId =>
+      $composableBuilder(column: $table.mediaId, builder: (column) => column);
+
+  GeneratedColumn<String> get relativePath => $composableBuilder(
+    column: $table.relativePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sha256 =>
+      $composableBuilder(column: $table.sha256, builder: (column) => column);
+
+  GeneratedColumn<int> get byteLength => $composableBuilder(
+    column: $table.byteLength,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => column);
+
+  GeneratedColumn<String> get codec =>
+      $composableBuilder(column: $table.codec, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMillis => $composableBuilder(
+    column: $table.durationMillis,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAtUtcMicros => $composableBuilder(
+    column: $table.createdAtUtcMicros,
+    builder: (column) => column,
+  );
+
+  $$RawCaptureRowsTableAnnotationComposer get captureId {
+    final $$RawCaptureRowsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.captureId,
+      referencedTable: $db.rawCaptureRows,
+      getReferencedColumn: (t) => t.captureId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RawCaptureRowsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rawCaptureRows,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RawMediaRowsTableTableManager
+    extends
+        RootTableManager<
+          _$CaptureDatabase,
+          $RawMediaRowsTable,
+          RawMediaRow,
+          $$RawMediaRowsTableFilterComposer,
+          $$RawMediaRowsTableOrderingComposer,
+          $$RawMediaRowsTableAnnotationComposer,
+          $$RawMediaRowsTableCreateCompanionBuilder,
+          $$RawMediaRowsTableUpdateCompanionBuilder,
+          (RawMediaRow, $$RawMediaRowsTableReferences),
+          RawMediaRow,
+          PrefetchHooks Function({bool captureId})
+        > {
+  $$RawMediaRowsTableTableManager(
+    _$CaptureDatabase db,
+    $RawMediaRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RawMediaRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RawMediaRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RawMediaRowsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> mediaId = const Value.absent(),
+                Value<String> captureId = const Value.absent(),
+                Value<String> relativePath = const Value.absent(),
+                Value<String> sha256 = const Value.absent(),
+                Value<int> byteLength = const Value.absent(),
+                Value<String?> mimeType = const Value.absent(),
+                Value<String?> codec = const Value.absent(),
+                Value<int?> durationMillis = const Value.absent(),
+                Value<int> createdAtUtcMicros = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RawMediaRowsCompanion(
+                mediaId: mediaId,
+                captureId: captureId,
+                relativePath: relativePath,
+                sha256: sha256,
+                byteLength: byteLength,
+                mimeType: mimeType,
+                codec: codec,
+                durationMillis: durationMillis,
+                createdAtUtcMicros: createdAtUtcMicros,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String mediaId,
+                required String captureId,
+                required String relativePath,
+                required String sha256,
+                required int byteLength,
+                Value<String?> mimeType = const Value.absent(),
+                Value<String?> codec = const Value.absent(),
+                Value<int?> durationMillis = const Value.absent(),
+                required int createdAtUtcMicros,
+                Value<int> rowid = const Value.absent(),
+              }) => RawMediaRowsCompanion.insert(
+                mediaId: mediaId,
+                captureId: captureId,
+                relativePath: relativePath,
+                sha256: sha256,
+                byteLength: byteLength,
+                mimeType: mimeType,
+                codec: codec,
+                durationMillis: durationMillis,
+                createdAtUtcMicros: createdAtUtcMicros,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RawMediaRowsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({captureId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -1484,15 +2655,15 @@ class $$RawCaptureRowsTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (sourceInstallationId) {
+                    if (captureId) {
                       state = state.withJoin(
                         currentTable: table,
-                        currentColumn: table.sourceInstallationId,
-                        referencedTable: $$RawCaptureRowsTableReferences
-                            ._sourceInstallationIdTable(db),
-                        referencedColumn: $$RawCaptureRowsTableReferences
-                            ._sourceInstallationIdTable(db)
-                            .id,
+                        currentColumn: table.captureId,
+                        referencedTable: $$RawMediaRowsTableReferences
+                            ._captureIdTable(db),
+                        referencedColumn: $$RawMediaRowsTableReferences
+                            ._captureIdTable(db)
+                            .captureId,
                       ) as T;
                     }
 
@@ -1507,19 +2678,19 @@ class $$RawCaptureRowsTableTableManager
       );
 }
 
-typedef $$RawCaptureRowsTableProcessedTableManager =
+typedef $$RawMediaRowsTableProcessedTableManager =
     ProcessedTableManager<
       _$CaptureDatabase,
-      $RawCaptureRowsTable,
-      RawCaptureRow,
-      $$RawCaptureRowsTableFilterComposer,
-      $$RawCaptureRowsTableOrderingComposer,
-      $$RawCaptureRowsTableAnnotationComposer,
-      $$RawCaptureRowsTableCreateCompanionBuilder,
-      $$RawCaptureRowsTableUpdateCompanionBuilder,
-      (RawCaptureRow, $$RawCaptureRowsTableReferences),
-      RawCaptureRow,
-      PrefetchHooks Function({bool sourceInstallationId})
+      $RawMediaRowsTable,
+      RawMediaRow,
+      $$RawMediaRowsTableFilterComposer,
+      $$RawMediaRowsTableOrderingComposer,
+      $$RawMediaRowsTableAnnotationComposer,
+      $$RawMediaRowsTableCreateCompanionBuilder,
+      $$RawMediaRowsTableUpdateCompanionBuilder,
+      (RawMediaRow, $$RawMediaRowsTableReferences),
+      RawMediaRow,
+      PrefetchHooks Function({bool captureId})
     >;
 
 class $CaptureDatabaseManager {
@@ -1529,4 +2700,6 @@ class $CaptureDatabaseManager {
       $$InstallationsTableTableManager(_db, _db.installations);
   $$RawCaptureRowsTableTableManager get rawCaptureRows =>
       $$RawCaptureRowsTableTableManager(_db, _db.rawCaptureRows);
+  $$RawMediaRowsTableTableManager get rawMediaRows =>
+      $$RawMediaRowsTableTableManager(_db, _db.rawMediaRows);
 }

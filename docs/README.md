@@ -140,7 +140,8 @@ LifeOS 的产品维护流程是：
 - V0.1 PRD：首版范围基线；
 - Model Routing and Codex Workflow：Draft v1.0；
 - Codex Operating Manual：Draft v1.0；
-- Decision Log：D-001 至 D-031；
+- Decision Log：D-001 至 D-035；
+- 当前实施顺序：[文字优先内部试用](engineering/Text_First_Trial_Implementation_Route.md)（D-035）；暂停新增语音实现，不移除 V0.1 P0 语音要求。
 - `CONTEXT.md`：LifeOS 领域统一语言初版。
 - Stage 0 工程基础：Completed；ADR-0001（Flutter）与 ADR-0002（SQLite/Drift、Raw/Derived 分离）已接受，Stage 1 真实设备与 production data gate 尚未验收。
 
