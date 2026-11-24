@@ -1,5 +1,7 @@
 # LifeOS
 
+换电脑或继续开发，请先读[换机交接](docs/HANDOFF.md)。设计、需求和开发计划从[产品文档入口](docs/README.md)查阅。
+
 ## External AI Coding review
 
 The current review snapshot is on the repository's default `main` branch: [Aschere1/LifeOS](https://github.com/Aschere1/LifeOS). It includes the working text-capture slice, schema v2, migration tests and product/engineering documentation.
